@@ -1,0 +1,23 @@
+{
+    "Material": {
+        "AcrylicBlurRadius": 15
+    },
+    "Update": {
+        "CheckUpdateAtStartUp": true
+    },
+    "Folders": {
+        "Download": "/home/name",
+        "LocalMusic": [
+            "/home/name/Music",
+            "/home/name/Desktop"
+        ]
+    },
+    "MainWindow": {
+        "DpiScale": "Auto",
+        "Language": "Auto"
+    },
+    "QFluentWidgets": {
+        "ThemeColor": "#009faa",
+        "ThemeMode": "Auto"
+    }
+}

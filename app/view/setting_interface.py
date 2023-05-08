@@ -81,15 +81,6 @@ class SettingInterface(ScrollArea):
         self.expandLayout.addWidget(self.outputGroup)
         self.expandLayout.addWidget(self.aboutGroup)
 
-    def __showRestartTooltip(self):
-        """ show restart tooltip """
-        InfoBar.success(
-            self.tr('Updated successfully'),
-            self.tr('Configuration takes effect after restart'),
-            duration=1500,
-            parent=self
-        )
-
     def __onDownloadFolderCardClicked(self):
         """ download folder card clicked slot """
         folder = QFileDialog.getExistingDirectory(
@@ -102,9 +93,6 @@ class SettingInterface(ScrollArea):
 
     def __connectSignalToSlot(self):
         """ connect signal to slot """
-        cfg.appRestartSig.connect(self.__showRestartTooltip)
-        cfg.themeChanged.connect(setTheme)
-
         # output
         self.outputFolderCard.clicked.connect(
             self.__onDownloadFolderCardClicked)

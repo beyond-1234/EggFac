@@ -4,8 +4,7 @@ from PyQt5.QtCore import Qt, pyqtSignal, QEasingCurve
 from PyQt5.QtGui import QIcon
 from PyQt5.QtWidgets import QApplication, QHBoxLayout, QFrame, QWidget
 
-from qfluentwidgets import (ScrollArea, NavigationInterface, NavigationItemPosition, MessageBox,
-                            isDarkTheme, PopUpAniStackedWidget)
+from qfluentwidgets import (ScrollArea, NavigationInterface, NavigationItemPosition, PopUpAniStackedWidget)
 from qfluentwidgets import FluentIcon as FIF
 from qframelesswindow import FramelessWindow
 
@@ -140,14 +139,6 @@ class MainWindow(FramelessWindow):
     def resizeEvent(self, e):
         self.titleBar.move(46, 0)
         self.titleBar.resize(self.width()-46, self.titleBar.height())
-
-    def showMessageBox(self):
-        w = MessageBox(
-            self.tr('This is a help message'),
-            self.tr('You clicked a customized navigation widget. You can add more custom widgets by calling `NavigationInterface.addWidget()` 😉'),
-            self
-        )
-        w.exec()
 
     def switchToSample(self, routeKey, index):
         """ switch to sample """

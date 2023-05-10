@@ -46,19 +46,6 @@ class Ui_DialogBox:
         self.yesButton.clicked.connect(self.__onYesButtonClicked)
         self.cancelButton.clicked.connect(self.__onCancelButtonClicked)
 
-    # def _adjustText(self):
-    #     if self.isWindow():
-    #         if self.parent():
-    #             w = max(self.titleLabel.width(), self.parent().width())
-    #             chars = max(min(w / 9, 140), 30)
-    #         else:
-    #             chars = 100
-    #     else:
-    #         w = max(self.titleLabel.width(), self.window().width())
-    #         chars = max(min(w / 9, 100), 30)
-
-    #     self.contentLabel.setText(TextWrap.wrap(self.content, chars, False)[0])
-
     def __initLayout(self):
         self.vBoxLayout.setSpacing(0)
         self.vBoxLayout.setContentsMargins(0, 0, 0, 0)
@@ -67,13 +54,11 @@ class Ui_DialogBox:
         self.vBoxLayout.setSizeConstraint(QVBoxLayout.SetMinimumSize)
 
         self.textLayout.setSpacing(12)
-        self.textLayout.setContentsMargins(24, 24, 24, 24)
+        self.textLayout.setContentsMargins(12, 12, 12, 12)
         self.textLayout.addWidget(self.content, 0, Qt.AlignTop)
-        # self.textLayout.addWidget(self.titleLabel, 0, Qt.AlignTop)
-        # self.textLayout.addWidget(self.contentLabel, 0, Qt.AlignTop)
 
         self.buttonLayout.setSpacing(12)
-        self.buttonLayout.setContentsMargins(24, 24, 24, 24)
+        self.buttonLayout.setContentsMargins(12, 12, 12, 0)
         self.buttonLayout.addWidget(self.yesButton, 1, Qt.AlignVCenter)
         self.buttonLayout.addWidget(self.cancelButton, 1, Qt.AlignVCenter)
 
@@ -89,7 +74,7 @@ class Ui_DialogBox:
         """ 设置层叠样式 """
         # self.titleLabel.setObjectName("titleLabel")
         # self.contentLabel.setObjectName("contentLabel")
-        self.buttonGroup.setObjectName('buttonGroup')
+        # self.buttonGroup.setObjectName('buttonGroup')
         self.cancelButton.setObjectName('cancelButton')
 
         FluentStyleSheet.DIALOG.apply(self)
@@ -114,11 +99,7 @@ class CustomDialog(MaskDialogBase, Ui_DialogBox):
         self._hBoxLayout.addWidget(self.widget, 1, Qt.AlignCenter)
 
         self.buttonGroup.setMinimumWidth(280)
-        self.widget.setFixedSize(content.width() + 48, content.height() + 48)
-        # self.widget.setFixedSize(
-        #     max(self.contentLabel.width(), self.titleLabel.width()) + 48,
-        #     self.contentLabel.y() + self.contentLabel.height() + 105
-        # )
+        # self.widget.setFixedSize(content.width() + 48, content.height() + 48)
 
     def eventFilter(self, obj, e: QEvent):
         if obj is self.window():

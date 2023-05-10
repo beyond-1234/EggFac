@@ -16,6 +16,14 @@ BannerWidget > #galleryLabel {
     padding-left: 28px;
 }
 
+QProgressBar {
+	border-radius: 5px;
+	border: 1px solid #E8EDF2;
+}
+
+QProgressBar:chunk {
+	border-radius: 5px;
+}
 
 QScrollBar {
     background: transparent;

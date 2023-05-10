@@ -2,11 +2,12 @@
 from PyQt5 import QtCore
 from PyQt5.QtCore import QSize, QUrl, Qt, QRectF
 from PyQt5.QtGui import QDesktopServices, QFont, QPixmap, QPainter, QColor, QBrush, QPainterPath
-from PyQt5.QtWidgets import QFrame, QWidget, QHBoxLayout, QVBoxLayout, QLabel, QFileDialog
+from PyQt5.QtWidgets import QFrame, QProgressBar, QWidget, QHBoxLayout, QVBoxLayout, QLabel, QFileDialog
 from qfluentwidgets import (InfoBar, InfoBarPosition, PixmapLabel,
                             PushButton, ScrollArea, ToolButton,
                             ToolTipFilter, isDarkTheme, FluentIcon, FluentIcon)
 from app.component.dialog import CustomDialog
+from app.component.task_init_widget import TaskInitWidget
 from app.component.task_list_widget import TaskListWdget
 from ..common.style_sheet import StyleSheet
 
@@ -75,7 +76,7 @@ class HomeInterface(ScrollArea):
         if not self.checkFile(filePath=file[0]):
             return
 
-        dia = CustomDialog(QWidget(self), self)
+        dia = CustomDialog(TaskInitWidget(self), self)
         if dia.exec():
             print('ok clicked')
         else:

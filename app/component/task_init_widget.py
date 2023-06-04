@@ -21,11 +21,11 @@ class TaskInitWidget(QWidget):
 
         formatLayout = QHBoxLayout(self)
 
-        formatLabel = QLabel("Output Format", self)
+        self.formatLabel = QLabel("Output Format", self)
 
-        formatCombo = ComboBox(self)
-        formatCombo.addItems(['MP4', 'MKV', 'FLV'])
-        formatCombo.setCurrentIndex(0)
+        self.formatCombo = ComboBox(self)
+        self.formatCombo.addItems(['MP4', 'MKV', 'FLV'])
+        self.formatCombo.setCurrentIndex(0)
 
         trackLabel = QLabel("Track info", self)
 
@@ -48,8 +48,8 @@ class TaskInitWidget(QWidget):
         tree.expandAll()
         tree.setHeaderHidden(True)
 
-        formatLayout.addWidget(formatLabel)
-        formatLayout.addWidget(formatCombo)
+        formatLayout.addWidget(self.formatLabel)
+        formatLayout.addWidget(self.formatCombo)
 
         self.vBoxLayout.addWidget(title)
         self.vBoxLayout.addLayout(formatLayout)

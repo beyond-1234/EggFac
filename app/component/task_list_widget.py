@@ -7,17 +7,19 @@ from PyQt5.QtWidgets import QFrame, QProgressBar, QPushButton, QWidget, QHBoxLay
 
 from qfluentwidgets import LineEdit, PixmapLabel, ScrollArea, ToolButton, ToolTipFilter, isDarkTheme, FluentIcon, FluentIcon
 from ..common.style_sheet import StyleSheet
+from ..common.entity.task import Task
 
 class TaskListItemWdget(QWidget):
     """ list item """
-    def __init__(self, parent: QWidget):
+    def __init__(self, parent: QWidget, task: Task):
         super().__init__(parent)
+        self.task = task
         self.outerLayout = QHBoxLayout(self)
         self.infoLayout = QHBoxLayout(self)
         self.buttonLayout = QHBoxLayout(self)
         self.parentLayout = parent
 
-        fileNameLabel = QLabel("这是视频asdfasdfasdfasdfasasdfasdfasdfasdfasdfasdfasdd", self)
+        fileNameLabel = QLabel(task.name, self)
         fileNameLabel.setFont(QFont('Microsoft YaHei', 14, 0, False))
         fileNameLabel.setFixedWidth(150)
 
@@ -54,8 +56,11 @@ class TaskListItemWdget(QWidget):
         print('delete item')
         self.parentLayout.vBoxLayout.removeWidget(self)
 
+        self.task.deleteTask()
+
     def startTask(self):
         print('start item')
+        self.task.startTask()
 
 
 
@@ -64,6 +69,7 @@ class TaskListWdget(QWidget):
 
     def __init__(self, parent: QWidget | None) -> None:
         super().__init__(parent)
+
         # header part
         self.vBoxLayout = QVBoxLayout(self)
 
@@ -72,7 +78,7 @@ class TaskListWdget(QWidget):
 
         self.vBoxLayout.addWidget(addLabel)
 
-    def addTaskItem(self):
+    def addTaskItem(self, task):
         print('add item')
-        item = TaskListItemWdget(self)
+        item = TaskListItemWdget(self, task)
         self.vBoxLayout.addWidget(item)

@@ -8,6 +8,8 @@ from qfluentwidgets.components.dialog_box.dialog import MaskDialogBase
 from qfluentwidgets.common.auto_wrap import TextWrap
 from qfluentwidgets.components import PrimaryPushButton
 
+from ..common.entity.task import Task
+
 
 class Ui_DialogBox:
     """ Ui of message box """
@@ -67,6 +69,12 @@ class Ui_DialogBox:
         self.cancelSignal.emit()
 
     def __onYesButtonClicked(self):
+
+        # complete task info
+        # could be rewriten using signal later
+        self.task.targetFormat = self.content.formatCombo.currentText()
+        print("choosen target format: " + self.content.formatCombo.currentText())
+
         self.accept()
         self.yesSignal.emit()
 
@@ -86,12 +94,10 @@ class Ui_DialogBox:
 class CustomDialog(MaskDialogBase, Ui_DialogBox):
     """ Message box """
 
-    yesSignal = pyqtSignal()
-    cancelSignal = pyqtSignal()
-
-    def __init__(self, content: QWidget, parent=None):
+    def __init__(self, content: QWidget, task, parent=None):
         super().__init__(parent=parent)
         self._setUpUi(content, self.widget)
+        self.task = task
 
         self.setShadowEffect(60, (0, 10), QColor(0, 0, 0, 50))
         self.setMaskColor(QColor(0, 0, 0, 76))

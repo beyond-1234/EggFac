@@ -9,6 +9,7 @@ from qfluentwidgets import (InfoBar, InfoBarPosition, PixmapLabel,
 from app.component.dialog import CustomDialog
 from app.component.task_init_widget import TaskInitWidget
 from app.component.task_list_widget import TaskListWdget
+from ..common.entity.task import Task
 from ..common.style_sheet import StyleSheet
 
 
@@ -76,12 +77,15 @@ class HomeInterface(ScrollArea):
         if not self.checkFile(filePath=file[0]):
             return
 
-        dia = CustomDialog(TaskInitWidget(self), self)
-        if dia.exec():
-            print('ok clicked')
-        else:
-            print('cancel clicked')
-        self.taskList.addTaskItem()
+        task = Task.initTaskOnlySource(file[0])
+
+        if task is not None:
+            dia = CustomDialog(TaskInitWidget(self), task, self)
+            if dia.exec():
+                self.taskList.addTaskItem(task)
+                print('ok clicked')
+            else:
+                print('cancel clicked')
 
     def checkFile(self, filePath):
         return True

@@ -111,7 +111,7 @@ class MainWindow(FramelessWindow):
         )
 
         #!IMPORTANT: don't forget to set the default route key if you enable the return button
-        self.navigationInterface.setDefaultRouteKey(
+        self.navigationInterface.setCurrentItem(
             self.settingInterface.objectName())
 
         self.stackWidget.currentWidgetChanged.connect(

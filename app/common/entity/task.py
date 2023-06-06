@@ -1,10 +1,12 @@
 import os
 import sys
 import ffmpeg
+import _thread
 
 from dataclasses import dataclass
 from .track import Track
 from .task_status import TaskStatus
+from ..config import cfg
 
 @dataclass
 class Task:
@@ -31,8 +33,9 @@ class Task:
             print("file is dir")
             return None
 
-        name = os.path.basename(path)
-        format = name.split(".")[1]
+        fileTuple = os.path.splitext(path)
+        name = os.path.basename(fileTuple[0])
+        format = fileTuple[1] # could be ''
         tracks = []
 
         try:
@@ -46,7 +49,26 @@ class Task:
         return Task(path, name, format, targetFormat, 0, TaskStatus.CREATED, tracks)
 
     def startTask(self):
-        pass
+        print("starting task threaded")
+        _thread.start_new_thread(self.doStartTask, ())
+
+    def doStartTask(self):
+        outputFolder = cfg.get(cfg.outputFolder)
+
+        if not os.path.exists(outputFolder):
+            os.makedirs(outputFolder)
+
+        output = os.path.join(outputFolder, self.name + "." + self.targetFormat)
+        try:
+            (
+            ffmpeg.input(self.path)
+                .output(output, vcodec='copy', acodec='copy')
+                .overwrite_output()
+                .run()
+            )
+        except ffmpeg.Error as e:
+            pass
+
 
     def stopTask(self):
         pass

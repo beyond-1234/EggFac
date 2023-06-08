@@ -8,6 +8,7 @@ from PyQt5.QtWidgets import QFrame, QProgressBar, QPushButton, QWidget, QHBoxLay
 from qfluentwidgets import LineEdit, PixmapLabel, ScrollArea, ToolButton, ToolTipFilter, isDarkTheme, FluentIcon, FluentIcon
 from ..common.style_sheet import StyleSheet
 from ..common.entity.task import Task
+from ..common.signal_bus import signalBus
 
 class TaskListItemWdget(QWidget):
     """ list item """
@@ -23,12 +24,12 @@ class TaskListItemWdget(QWidget):
         fileNameLabel.setFont(QFont('Microsoft YaHei', 14, 0, False))
         fileNameLabel.setFixedWidth(150)
 
-        progress = QProgressBar(self)
-        progress.setValue(20)
-        progress.setMaximum(100)
-        progress.setMinimum(0)
+        self.progress = QProgressBar(self)
+        self.progress.setValue(0)
+        self.progress.setMaximum(100)
+        self.progress.setMinimum(0)
 
-        startButton = ToolButton(FluentIcon.CARE_RIGHT_SOLID)
+        startButton = ToolButton(FluentIcon.ADD)
         startButton.clicked.connect(self.startTask)
 
         deleteButton = ToolButton(FluentIcon.DELETE)
@@ -43,7 +44,7 @@ class TaskListItemWdget(QWidget):
         self.buttonLayout.setAlignment(Qt.AlignRight | Qt.AlignVCenter)
 
         self.infoLayout.addWidget(fileNameLabel, 0, alignment=Qt.AlignLeft)
-        self.infoLayout.addWidget(progress)
+        self.infoLayout.addWidget(self.progress)
 
         self.buttonLayout.addWidget(startButton, 0, alignment=Qt.AlignRight)
         self.buttonLayout.addWidget(deleteButton, 0, alignment=Qt.AlignRight)
@@ -58,8 +59,14 @@ class TaskListItemWdget(QWidget):
 
         self.task.deleteTask()
 
+    def updateProgressView(self, code, percentage):
+        if self.task.code == code:
+            # print("uuid {} ui progress update {}".format(code, percentage))
+            self.progress.setValue(percentage)
+
     def startTask(self):
         print('start item')
+        signalBus.updateProgressSignal.connect(self.updateProgressView)
         self.task.startTask()
 
 
@@ -67,7 +74,7 @@ class TaskListItemWdget(QWidget):
 class TaskListWdget(QWidget):
     """ task list """
 
-    def __init__(self, parent: QWidget | None) -> None:
+    def __init__(self, parent: QWidget) -> None:
         super().__init__(parent)
 
         # header part

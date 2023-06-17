@@ -8,7 +8,7 @@ from qfluentwidgets import (InfoBar, InfoBarPosition, PixmapLabel,
                             ToolTipFilter, isDarkTheme, FluentIcon, FluentIcon)
 from app.component.dialog import CustomDialog
 from app.component.task_init_widget import TaskInitWidget
-from app.component.task_list_widget import TaskListWdget
+from app.component.task_list_widget import TaskListWidget
 from ..common.entity.task import Task
 from ..common.style_sheet import StyleSheet
 
@@ -20,18 +20,22 @@ class HeaderWidget(QWidget):
         super().__init__(parent)
         # header part
         self.hBoxLayout = QHBoxLayout(self)
-        imageScale = 64
+        imageScale = 32
 
         self.addLabel = QLabel("Add new task", self)
         self.addLabel.setFont(QFont('Microsoft YaHei', 32, 0, False))
+
+        self.taskLabel = QLabel("Task list", self)
+        self.taskLabel.setFont(QFont('Microsoft YaHei', 32, 0, False))
 
         # add task button
         self.addButton = ToolButton(FluentIcon.ADD)
         self.addButton.setIconSize(QSize(imageScale, imageScale))
 
-        self.hBoxLayout.setContentsMargins(16, 16, 16, 16)
+        self.hBoxLayout.setContentsMargins(16, 16, 16, 0)
         self.hBoxLayout.setSpacing(32)
-        self.hBoxLayout.setAlignment(Qt.AlignRight)
+        self.hBoxLayout.setAlignment(Qt.AlignRight | Qt.AlignVCenter)
+        self.hBoxLayout.addWidget(self.taskLabel, 1, Qt.AlignLeft)
         self.hBoxLayout.addWidget(self.addLabel, 0, Qt.AlignRight)
         self.hBoxLayout.addWidget(self.addButton, 0, Qt.AlignRight)
 
@@ -49,8 +53,13 @@ class HomeInterface(ScrollArea):
         self.headerWidget = HeaderWidget(self)
         self.headerWidget.addButton.clicked.connect(self.clickAddButton)
 
+        self.lineSpliter = QFrame(self)
+        self.lineSpliter.setObjectName("lineSpliter")
+        self.lineSpliter.setStyleSheet("QFrame#lineSpliter{color:grey;background:grey;height:4px;margin-left:18px;margin-right:18px;}")
+        self.lineSpliter.setFrameShape(QFrame.Shape.HLine)
+
         # task list
-        self.taskList = TaskListWdget(self)
+        self.taskList = TaskListWidget(self)
 
         self.__initWidget()
 
@@ -64,6 +73,7 @@ class HomeInterface(ScrollArea):
         self.vBoxLayoutForAll.setAlignment(Qt.AlignTop)
 
         self.vBoxLayoutForAll.addWidget(self.headerWidget)
+        self.vBoxLayoutForAll.addWidget(self.lineSpliter)
         self.vBoxLayoutForAll.addWidget(self.taskList)
 
     def clickAddButton(self):
@@ -80,7 +90,7 @@ class HomeInterface(ScrollArea):
         task = Task.initTaskOnlySource(file[0])
 
         if task is not None:
-            dia = CustomDialog(TaskInitWidget(self), task, self)
+            dia = CustomDialog(TaskInitWidget(self, task), task, self)
             if dia.exec():
                 self.taskList.addTaskItem(task)
                 print('ok clicked')

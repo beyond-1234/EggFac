@@ -56,7 +56,7 @@ class MainWindow(FramelessWindow):
         self.widgetLayout = QHBoxLayout()
 
         self.stackWidget = StackedWidget(self)
-        self.navigationInterface = NavigationInterface(self, True, True)
+        self.navigationInterface = NavigationInterface(self, True, False)
 
         # create sub interface
         self.homeInterface = HomeInterface(self)
@@ -124,7 +124,7 @@ class MainWindow(FramelessWindow):
         self.resize(960, 780)
         self.setMinimumWidth(760)
         self.setWindowIcon(QIcon(':/gallery/images/logo.png'))
-        self.setWindowTitle('PyQt-Fluent-Widgets')
+        self.setWindowTitle('EggFac')
         self.titleBar.setAttribute(Qt.WA_StyledBackground)
 
         desktop = QApplication.desktop().availableGeometry()

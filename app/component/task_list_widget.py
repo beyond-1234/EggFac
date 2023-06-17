@@ -3,51 +3,57 @@ import typing
 from PyQt5 import QtCore
 from PyQt5.QtCore import QSize, QUrl, Qt, QRectF
 from PyQt5.QtGui import QDesktopServices, QFont, QPixmap, QPainter, QColor, QBrush, QPainterPath
-from PyQt5.QtWidgets import QFrame, QProgressBar, QPushButton, QWidget, QHBoxLayout, QVBoxLayout, QLabel
+from PyQt5.QtWidgets import QFrame, QPushButton, QWidget, QHBoxLayout, QVBoxLayout, QLabel
 
-from qfluentwidgets import LineEdit, PixmapLabel, ScrollArea, ToolButton, ToolTipFilter, isDarkTheme, FluentIcon, FluentIcon
+from qfluentwidgets import LineEdit, PixmapLabel, ScrollArea, ToolButton, ToolTipFilter, isDarkTheme, FluentIcon, FluentIcon, ProgressBar
 from ..common.style_sheet import StyleSheet
 from ..common.entity.task import Task
 from ..common.signal_bus import signalBus
 
-class TaskListItemWdget(QWidget):
+class TaskListItemWidget(QFrame):
     """ list item """
     def __init__(self, parent: QWidget, task: Task):
         super().__init__(parent)
         self.task = task
-        self.outerLayout = QHBoxLayout(self)
+        self.outerLayout = QVBoxLayout(self)
         self.infoLayout = QHBoxLayout(self)
-        self.buttonLayout = QHBoxLayout(self)
+        self.buttonLayout = QVBoxLayout(self)
         self.parentLayout = parent
 
+        self.setStyleSheet("TaskListItemWidget{margin-left:8px;margin-right:8px;border: 1px solid grey;border-radius:8px;}")
+        self.infoLayout.setContentsMargins(4, 4, 4, 36)
+        self.buttonLayout.setContentsMargins(4, 0, 4, 8)
+
         fileNameLabel = QLabel(task.name, self)
-        fileNameLabel.setFont(QFont('Microsoft YaHei', 14, 0, False))
-        fileNameLabel.setFixedWidth(150)
+        fileNameLabel.setFont(QFont('Microsoft YaHei', 12, 64, False))
 
-        self.progress = QProgressBar(self)
+        self.hintLabel = QLabel("progressing", self)
+        self.hintLabel.setFont(QFont('Microsoft YaHei', 10, 32, False))
+
+        self.progress = ProgressBar(self)
         self.progress.setValue(0)
-        self.progress.setMaximum(100)
-        self.progress.setMinimum(0)
 
-        startButton = ToolButton(FluentIcon.ADD)
+        startButton = ToolButton(FluentIcon.CARE_RIGHT_SOLID)
         startButton.clicked.connect(self.startTask)
+        startButton.setIconSize(QSize(12, 12))
 
         deleteButton = ToolButton(FluentIcon.DELETE)
         deleteButton.clicked.connect(self.deleteTaskItem)
+        deleteButton.setIconSize(QSize(12, 12))
 
         self.infoLayout.setSizeConstraint(QHBoxLayout.SetMinimumSize)
-        self.infoLayout.setSpacing(4)
-        self.buttonLayout.setAlignment(Qt.AlignLeft | Qt.AlignVCenter)
+        self.infoLayout.setAlignment(Qt.AlignLeft | Qt.AlignVCenter)
 
         self.buttonLayout.setSizeConstraint(QHBoxLayout.SetMinimumSize)
         self.buttonLayout.setSpacing(4)
         self.buttonLayout.setAlignment(Qt.AlignRight | Qt.AlignVCenter)
 
-        self.infoLayout.addWidget(fileNameLabel, 0, alignment=Qt.AlignLeft)
-        self.infoLayout.addWidget(self.progress)
+        self.infoLayout.addWidget(fileNameLabel, 1, alignment=Qt.AlignLeft)
+        self.infoLayout.addWidget(startButton, 0, alignment=Qt.AlignRight)
+        self.infoLayout.addWidget(deleteButton, 0, alignment=Qt.AlignRight)
 
-        self.buttonLayout.addWidget(startButton, 0, alignment=Qt.AlignRight)
-        self.buttonLayout.addWidget(deleteButton, 0, alignment=Qt.AlignRight)
+        self.buttonLayout.addWidget(self.progress)
+        self.buttonLayout.addWidget(self.hintLabel, 0, Qt.AlignRight)
 
         self.outerLayout.addLayout(self.infoLayout)
         self.outerLayout.addLayout(self.buttonLayout)
@@ -63,15 +69,18 @@ class TaskListItemWdget(QWidget):
         if self.task.code == code:
             # print("uuid {} ui progress update {}".format(code, percentage))
             self.progress.setValue(percentage)
+            if percentage >= 100:
+                self.hintLabel.setText("finished")
 
     def startTask(self):
         print('start item')
+        self.hintLabel.setText("progressing")
         signalBus.updateProgressSignal.connect(self.updateProgressView)
         self.task.startTask()
 
 
 
-class TaskListWdget(QWidget):
+class TaskListWidget(QWidget):
     """ task list """
 
     def __init__(self, parent: QWidget) -> None:
@@ -80,12 +89,7 @@ class TaskListWdget(QWidget):
         # header part
         self.vBoxLayout = QVBoxLayout(self)
 
-        addLabel = QLabel("Task list", self)
-        addLabel.setFont(QFont('Microsoft YaHei', 32, 0, False))
-
-        self.vBoxLayout.addWidget(addLabel)
-
     def addTaskItem(self, task):
         print('add item')
-        item = TaskListItemWdget(self, task)
+        item = TaskListItemWidget(self, task)
         self.vBoxLayout.addWidget(item)

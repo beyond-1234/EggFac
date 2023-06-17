@@ -59,6 +59,7 @@ class Task:
 
     def startTask(self):
         print("starting task threaded")
+        self.status = TaskStatus.STARTED
         _thread.start_new_thread(self.doStartTask, ())
 
     def _do_watch_progress(self, sock, handler):
@@ -90,6 +91,7 @@ class Task:
         elif key == 'progress' and value == 'end':
             print("current task ended")
             self.progress = int(100)
+            self.status = TaskStatus.ENDED
             signalBus.updateProgressSignal.emit(self.code, 100)
 
     def _create_progress_socket(self):
@@ -120,6 +122,7 @@ class Task:
             )
         except ffmpeg.Error as e:
             print(e.stderr, file=sys.stderr)
+            self.status = TaskStatus.ABORTED
 
 
     def stopTask(self):

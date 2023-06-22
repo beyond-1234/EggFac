@@ -447,6 +447,11 @@
         <translation>此PC上的音樂</translation>
     </message>
     <message>
+        <location filename="../../view/setting_interface.py" line="36"/>
+        <source>Output Setting</source>
+        <translation>输出设置</translation>
+    </message>
+    <message>
         <location filename="../../view/setting_interface.py" line="38"/>
         <source>Local music library</source>
         <translation>本地音樂庫</translation>
@@ -460,6 +465,11 @@
         <location filename="../../view/setting_interface.py" line="45"/>
         <source>Download directory</source>
         <translation>下載目錄</translation>
+    </message>
+    <message>
+        <location filename="../../view/setting_interface.py" line="45"/>
+        <source>Output directory</source>
+        <translation>输出目录</translation>
     </message>
     <message>
         <location filename="../../view/setting_interface.py" line="54"/>

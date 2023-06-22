@@ -1,23 +1,19 @@
 {
     "Material": {
-        "AcrylicBlurRadius": 15
+        "AcrylicBlurRadius": 12
     },
     "Update": {
         "CheckUpdateAtStartUp": true
     },
-    "Folders": {
-        "Download": "/home/name",
-        "LocalMusic": [
-            "/home/name/Music",
-            "/home/name/Desktop"
-        ]
-    },
     "MainWindow": {
         "DpiScale": "Auto",
-        "Language": "Auto"
+        "Language": "zh_CN"
+    },
+    "Folders": {
+        "Output": "/home/name/EggFac/app/output"
     },
     "QFluentWidgets": {
-        "ThemeColor": "#009faa",
-        "ThemeMode": "Auto"
+        "ThemeColor": "#ffaa0000",
+        "ThemeMode": "Light"
     }
 }

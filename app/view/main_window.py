@@ -95,7 +95,7 @@ class MainWindow(FramelessWindow):
         self.navigationInterface.addItem(
             routeKey=self.homeInterface.objectName(),
             icon=FIF.HOME,
-            text='Home',
+            text=self.tr('Home'),
             onClick=lambda t: self.switchTo(self.homeInterface, t),
             position=NavigationItemPosition.TOP
         )
@@ -105,7 +105,7 @@ class MainWindow(FramelessWindow):
         self.navigationInterface.addItem(
             routeKey=self.settingInterface.objectName(),
             icon=FIF.SETTING,
-            text='Settings',
+            text=self.tr('Settings'),
             onClick=lambda t: self.switchTo(self.settingInterface, t),
             position=NavigationItemPosition.BOTTOM
         )
@@ -124,7 +124,7 @@ class MainWindow(FramelessWindow):
         self.resize(960, 780)
         self.setMinimumWidth(760)
         self.setWindowIcon(QIcon(':/gallery/images/logo.png'))
-        self.setWindowTitle('EggFac')
+        self.setWindowTitle(self.tr("EggFac"))
         self.titleBar.setAttribute(Qt.WA_StyledBackground)
 
         desktop = QApplication.desktop().availableGeometry()

@@ -196,10 +196,10 @@ class SettingInterface(ScrollArea):
         """ download folder card clicked slot """
         folder = QFileDialog.getExistingDirectory(
             self, self.tr("Choose folder"), "./")
-        if not folder or cfg.get(cfg.downloadFolder) == folder:
+        if not folder or cfg.get(cfg.outputFolder) == folder:
             return
 
-        cfg.set(cfg.downloadFolder, folder)
+        cfg.set(cfg.outputFolder, folder)
         self.downloadFolderCard.setContent(folder)
 
     def __connectSignalToSlot(self):

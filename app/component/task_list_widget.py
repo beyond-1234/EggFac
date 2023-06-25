@@ -1,5 +1,5 @@
 # coding:utf-8
-import typing
+import os
 from PyQt5 import QtCore
 from PyQt5.QtCore import QSize, QUrl, Qt, QRectF
 from PyQt5.QtGui import QDesktopServices, QFont, QPixmap, QPainter, QColor, QBrush, QPainterPath
@@ -9,6 +9,7 @@ from qfluentwidgets import LineEdit, PixmapLabel, ScrollArea, ToolButton, ToolTi
 from ..common.style_sheet import StyleSheet
 from ..common.entity.task import Task
 from ..common.signal_bus import signalBus
+from ..common.config import cfg
 
 class TaskListItemWidget(QFrame):
     """ list item """
@@ -41,6 +42,10 @@ class TaskListItemWidget(QFrame):
         deleteButton.clicked.connect(self.deleteTaskItem)
         deleteButton.setIconSize(QSize(12, 12))
 
+        openButton = ToolButton(FluentIcon.FOLDER)
+        openButton.clicked.connect(self.openTargetFolder)
+        openButton.setIconSize(QSize(12, 12))
+
         self.infoLayout.setSizeConstraint(QHBoxLayout.SetMinimumSize)
         self.infoLayout.setAlignment(Qt.AlignLeft | Qt.AlignVCenter)
 
@@ -51,6 +56,7 @@ class TaskListItemWidget(QFrame):
         self.infoLayout.addWidget(fileNameLabel, 1, alignment=Qt.AlignLeft)
         self.infoLayout.addWidget(startButton, 0, alignment=Qt.AlignRight)
         self.infoLayout.addWidget(deleteButton, 0, alignment=Qt.AlignRight)
+        self.infoLayout.addWidget(openButton, 0, alignment=Qt.AlignRight)
 
         self.buttonLayout.addWidget(self.progress)
         self.buttonLayout.addWidget(self.hintLabel, 0, Qt.AlignRight)
@@ -64,6 +70,11 @@ class TaskListItemWidget(QFrame):
         self.parentLayout.vBoxLayout.removeWidget(self)
 
         self.task.deleteTask()
+
+    def openTargetFolder(self):
+        print('open target folder')
+        os.system('dolphin '+cfg.outputFolder.value)
+
 
     def updateProgressView(self, code, percentage):
         if self.task.code == code:

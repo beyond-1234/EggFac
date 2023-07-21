@@ -25,6 +25,7 @@ class Task:
     progress: int
     status: TaskStatus
     tracks: list
+    isKeepingOriginalSeting: bool
 
     @staticmethod
     def initTaskOnlySource(path):
@@ -55,7 +56,7 @@ class Task:
             print(e.stderr, file=sys.stderr)
             return None
 
-        return Task(uuid.uuid1().__str__(), path, name, format, targetFormat, duration, 0, TaskStatus.CREATED, tracks)
+        return Task(uuid.uuid1().__str__(), path, name, format, targetFormat, duration, 0, TaskStatus.CREATED, tracks, False)
 
     def startTask(self):
         print("starting task threaded")

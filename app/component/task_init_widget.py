@@ -33,6 +33,7 @@ class TaskInitWidget(QWidget):
         keepSettingLayout = QHBoxLayout(self)
         keepSettingLabel = QLabel(self.tr('keep original setting'), self)
         isKeepingSettingCheckBox = CheckBox('', self)
+        isKeepingSettingCheckBox.setChecked(True)
         isKeepingSettingCheckBox.stateChanged.connect(slot=self.onKeepOriginalChanged)
 
         keepSettingLayout.addWidget(keepSettingLabel)

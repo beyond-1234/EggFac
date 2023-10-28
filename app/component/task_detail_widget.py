@@ -6,7 +6,7 @@ from qfluentwidgets import Pivot, qrouter, ListWidget
 from ..common.entity.task import Task
 from ..common.entity.track import Track
 
-class TrackInfoWidget(QWidget):
+class TaskDetailWidget(QWidget):
     """ track info pivot page """
 
     def __init__(self, parent, task: Task):

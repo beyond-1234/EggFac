@@ -56,7 +56,7 @@ class Task:
             print(e.stderr, file=sys.stderr)
             return None
 
-        return Task(uuid.uuid1().__str__(), path, name, format, targetFormat, duration, 0, TaskStatus.CREATED, tracks, False)
+        return Task(uuid.uuid1().__str__(), path, name, format, targetFormat, duration, 0, TaskStatus.CREATED, tracks, True)
 
     def startTask(self):
         print("starting task threaded")

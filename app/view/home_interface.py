@@ -9,6 +9,7 @@ from qfluentwidgets import (InfoBar, InfoBarPosition, PixmapLabel,
 from app.component.dialog import CustomDialog
 from app.component.task_init_widget import TaskInitWidget
 from app.component.task_list_widget import TaskListWidget
+from app.component.task_detail_widget import TaskDetailWidget
 from ..common.entity.task import Task
 from ..common.style_sheet import StyleSheet
 
@@ -89,13 +90,24 @@ class HomeInterface(ScrollArea):
 
         task = Task.initTaskOnlySource(file[0])
 
-        if task is not None:
-            dia = CustomDialog(TaskInitWidget(self, task), task, self)
-            if dia.exec():
-                self.taskList.addTaskItem(task)
-                print('ok clicked')
-            else:
-                print('cancel clicked')
+        if task is None:
+            return
+
+        # open init task dialog
+        taskInitDialog = CustomDialog(TaskInitWidget(self, task), task, self)
+        if not taskInitDialog.exec():
+            print('cancel clicked')
+            return
+
+        if not task.isKeepingOriginalSeting:
+            # open detail setting dialog
+            taskDetailDialog = CustomDialog(TaskDetailWidget(self, task), task, self)
+            if not taskDetailDialog.exec():
+                print('cancel detail clicked')
+                return
+
+        self.taskList.addTaskItem(task)
+
 
     def checkFile(self, filePath):
         return True

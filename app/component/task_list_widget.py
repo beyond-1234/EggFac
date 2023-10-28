@@ -1,5 +1,6 @@
 # coding:utf-8
 import os
+import subprocess
 from PyQt5 import QtCore
 from PyQt5.QtCore import QSize, QUrl, Qt, QRectF
 from PyQt5.QtGui import QDesktopServices, QFont, QPixmap, QPainter, QColor, QBrush, QPainterPath
@@ -73,7 +74,7 @@ class TaskListItemWidget(QFrame):
 
     def openTargetFolder(self):
         print('open target folder')
-        os.system('dolphin '+cfg.outputFolder.value)
+        subprocess.Popen(['xdg-open', cfg.outputFolder.value])
 
 
     def updateProgressView(self, code, percentage):

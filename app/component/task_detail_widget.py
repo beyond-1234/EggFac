@@ -1,7 +1,7 @@
 from PyQt5 import QtWidgets
 from PyQt5.QtCore import Qt, QModelIndex
 from PyQt5.QtWidgets import QWidget, QStackedWidget, QVBoxLayout, QHBoxLayout, QLabel, QListWidgetItem, QFrame
-from qfluentwidgets import Pivot, qrouter, ListWidget
+from qfluentwidgets import PushButton, LineEdit, Pivot, qrouter, ListWidget, FlowLayout, StrongBodyLabel
 
 from ..common.entity.task import Task
 from ..common.entity.track import Track
@@ -52,40 +52,44 @@ class VideoSubPage(QWidget):
     def __init__(self, parent: QWidget | None, task: Task) -> None:
         super().__init__(parent)
         # header part
-        self.vBoxLayout = QHBoxLayout(self)
+        self.detailLayout = QHBoxLayout(self)
 
-        trackList = ListWidget(self)
-        trackList.setDisabled(True)
+        virtualParent = QWidget()
+        layout = FlowLayout(virtualParent, False)
 
-        tracks = task.tracks
-        for t in tracks:
-            if t.type == 'video':
-                trackItem = QListWidgetItem("{}".format(t.type, t.name))
-                trackList.addItem(trackItem)
+        bitRateLabel = StrongBodyLabel(self.tr("Bit Rate"), self)
+        bitRateLineEdit = LineEdit(self)
 
-        #  trackList.setCurrentRow(0)
-        self.vBoxLayout.addWidget(trackList)
+        layout.addWidget(bitRateLabel)
+        layout.addWidget(bitRateLineEdit)
+
+        self.detailLayout.addWidget(virtualParent)
+
 
 class AudioSubPage(QWidget):
 
     def __init__(self, parent: QWidget | None, task: Task) -> None:
         super().__init__(parent)
         # header part
-        self.vBoxLayout = QVBoxLayout(self)
+        audioDetailLayout = QHBoxLayout(self)
 
         trackList = ListWidget(self)
-        trackList.setDisabled(True)
-        #  trackList.setSelectionBehavior(QtWidgets.QAbstractItemView.SelectRows)
-        #  trackList.setSelectionMode(QtWidgets.QAbstractItemView.MultiSelection)
+
+        virtualParent = QWidget()
+        layout = FlowLayout(virtualParent, False)
 
         tracks = task.tracks
         for t in tracks:
             if t.type == 'audio':
                 trackItem = QListWidgetItem("{} track: {}".format(t.type, t.name))
+                trackItem.setCheckState(Qt.Checked)
                 trackList.addItem(trackItem)
 
-        #  trackList.setCurrentRow(0)
-        self.vBoxLayout.addWidget(trackList)
+        audioDetailLayout.addWidget(trackList)
+        audioDetailLayout.addWidget(virtualParent)
+
+        audioDetailLayout.setStretch(0, 1)
+        audioDetailLayout.setStretch(1, 3)
 
 class SubtitleSubPage(QWidget):
 

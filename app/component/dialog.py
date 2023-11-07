@@ -94,7 +94,7 @@ class Ui_DialogBox:
 class CustomDialog(MaskDialogBase, Ui_DialogBox):
     """ Message box """
 
-    def __init__(self, content: QWidget, task, parent=None):
+    def __init__(self, content: QWidget, task, parent=None, width=None):
         super().__init__(parent=parent)
         self._setUpUi(content, self.widget)
         self.task = task
@@ -104,7 +104,7 @@ class CustomDialog(MaskDialogBase, Ui_DialogBox):
         self._hBoxLayout.removeWidget(self.widget)
         self._hBoxLayout.addWidget(self.widget, 1, Qt.AlignCenter)
 
-        self.buttonGroup.setMinimumWidth(280)
+        self.buttonGroup.setMinimumWidth(280 if width is None else width)
         # self.widget.setFixedSize(content.width() + 48, content.height() + 48)
 
     def eventFilter(self, obj, e: QEvent):

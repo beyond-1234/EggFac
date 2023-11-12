@@ -10,6 +10,7 @@ from dataclasses import dataclass
 
 from ..signal_bus import signalBus
 from .track import Track
+from .task_detail import TaskDetail
 from .task_status import TaskStatus
 from ..config import cfg
 
@@ -26,6 +27,7 @@ class Task:
     status: TaskStatus
     tracks: list
     isKeepingOriginalSeting: bool
+    taskDetail: TaskDetail
 
     @staticmethod
     def initTaskOnlySource(path):
@@ -56,7 +58,16 @@ class Task:
             print(e.stderr, file=sys.stderr)
             return None
 
-        return Task(uuid.uuid1().__str__(), path, name, format, targetFormat, duration, 0, TaskStatus.CREATED, tracks, True)
+        audioBitRate = [t.probe["bit_rate"] for t in tracks if t.type == 'audio']
+        audioSampleRate = [t.probe["sample_rate"] for t in tracks if t.type == 'audio']
+        taskDetail = TaskDetail(
+                '',
+                audioSampleRate=0 if len(audioSampleRate) == 0 else int(audioSampleRate[0]),
+                audioBitRate=0 if len(audioBitRate) == 0 else int(audioBitRate[0]),
+                audioVolumn=100
+                )
+
+        return Task(uuid.uuid1().__str__(), path, name, format, targetFormat, duration, 0, TaskStatus.CREATED, tracks, True, taskDetail)
 
     def startTask(self):
         print("starting task threaded")

@@ -72,8 +72,8 @@ class Ui_DialogBox:
 
         # complete task info
         # could be rewriten using signal later
-        self.task.targetFormat = self.content.formatCombo.currentText()
-        print("choosen target format: " + self.content.formatCombo.currentText())
+        # self.task.targetFormat = self.content.formatCombo.currentText()
+        # print("choosen target format: " + self.content.formatCombo.currentText())
 
         self.accept()
         self.yesSignal.emit()

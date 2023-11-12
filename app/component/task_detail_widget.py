@@ -1,10 +1,11 @@
 from PyQt5 import QtWidgets
 from PyQt5.QtCore import Qt, QModelIndex
 from PyQt5.QtWidgets import QWidget, QStackedWidget, QVBoxLayout, QHBoxLayout, QLabel, QListWidgetItem, QFrame
-from qfluentwidgets import PushButton, LineEdit, Pivot, qrouter, ListWidget, FlowLayout, StrongBodyLabel
+from qfluentwidgets import SpinBox, LineEdit, Pivot, SpinBox, qrouter, ListWidget, FlowLayout, StrongBodyLabel
 
 from ..common.entity.task import Task
 from ..common.entity.track import Track
+from ..common.prop_line_edit import PropLineEdit
 
 class TaskDetailWidget(QWidget):
     """ track info pivot page """
@@ -16,21 +17,133 @@ class TaskDetailWidget(QWidget):
         self.pivot = Pivot(self)
         self.vBoxLayout = QVBoxLayout(self)
 
-        self.videoTrackInterface = VideoSubPage(self, task)
-        self.audioTrackInterface = AudioSubPage(self, task)
-        self.subtitleTrackInterface = SubtitleSubPage(self, task)
+        # self.videoTrackInterface = VideoSubPage(self, task)
+        # self.audioTrackInterface = AudioSubPage(self, task)
+        # self.subtitleTrackInterface = SubtitleSubPage(self, task)
 
-        self.addSubPivotPage(self.videoTrackInterface, 'Video', self.tr('Video'))
-        self.addSubPivotPage(self.audioTrackInterface, 'Audio', self.tr('Audio'))
-        self.addSubPivotPage(self.subtitleTrackInterface, 'Subtitle', self.tr('Subtitle'))
+        # self.addSubPivotPage(self.videoTrackInterface, 'Video', self.tr('Video'))
+        # self.addSubPivotPage(self.subtitleTrackInterface, 'Subtitle', self.tr('Subtitle'))
+
+        videoPage = self.addVideoPage(task)
+        self.addAudioPage(task)
+        self.addSubtitlePage(task)
 
         self.vBoxLayout.addWidget(self.pivot, 0)
         self.vBoxLayout.addWidget(self.stackedWidget, 0)
         self.vBoxLayout.setContentsMargins(0,0,0,0)
 
         self.stackedWidget.currentChanged.connect(slot=self.onCurrentIndexChanged)
-        self.stackedWidget.setCurrentWidget(self.videoTrackInterface)
-        self.pivot.setCurrentItem(self.videoTrackInterface.objectName())
+        self.stackedWidget.setCurrentWidget(videoPage)
+        self.pivot.setCurrentItem(videoPage.objectName())
+
+
+    def addVideoPage(self, task):
+        subPage = TrackSubPage(self, task, 'video')
+
+        sampleRateEdit = PropLineEdit(
+                self,
+                self.tr('Sample Rate'),
+                task.taskDetail.audioSampleRate,
+                lambda t: task.taskDetail.setAudioSampleRate(t),
+                minn=1,
+                maxn=2147483647,
+                unit='Hz')
+
+        bitRateEdit = PropLineEdit(
+                self,
+                self.tr('Bit Rate'),
+                task.taskDetail.audioBitRate,
+                lambda t: task.taskDetail.setAudioBitRate(t),
+                minn=1,
+                maxn=2147483647,
+                unit='kb/s')
+
+        volumnEdit = PropLineEdit(
+                self,
+                self.tr('Volumn'),
+                task.taskDetail.audioVolumn,
+                lambda t: task.taskDetail.setAudioVolumn(t),
+                minn=1,
+                maxn=100,
+                unit='%')
+
+        subPage.addPropWidget(sampleRateEdit)
+        subPage.addPropWidget(bitRateEdit)
+        subPage.addPropWidget(volumnEdit)
+        self.addSubPivotPage(subPage, 'Video', self.tr('Video'))
+        return subPage
+
+
+    def addAudioPage(self, task):
+        subPage = TrackSubPage(self, task, 'audio')
+
+        sampleRateEdit = PropLineEdit(
+                self,
+                self.tr('Sample Rate'),
+                task.taskDetail.audioSampleRate,
+                lambda t: task.taskDetail.setAudioSampleRate(t),
+                minn=1,
+                maxn=2147483647,
+                unit='Hz')
+
+        bitRateEdit = PropLineEdit(
+                self,
+                self.tr('Bit Rate'),
+                task.taskDetail.audioBitRate,
+                lambda t: task.taskDetail.setAudioBitRate(t),
+                minn=1,
+                maxn=2147483647,
+                unit='kb/s')
+
+        volumnEdit = PropLineEdit(
+                self,
+                self.tr('Volumn'),
+                task.taskDetail.audioVolumn,
+                lambda t: task.taskDetail.setAudioVolumn(t),
+                minn=1,
+                maxn=100,
+                unit='%')
+
+        subPage.addPropWidget(sampleRateEdit)
+        subPage.addPropWidget(bitRateEdit)
+        subPage.addPropWidget(volumnEdit)
+        self.addSubPivotPage(subPage, 'Audio', self.tr('Audio'))
+
+    def addSubtitlePage(self, task):
+        subPage = TrackSubPage(self, task, 'subtitle')
+
+        sampleRateEdit = PropLineEdit(
+                self,
+                self.tr('Sample Rate'),
+                task.taskDetail.audioSampleRate,
+                lambda t: task.taskDetail.setAudioSampleRate(t),
+                minn=1,
+                maxn=2147483647,
+                unit='Hz')
+
+        bitRateEdit = PropLineEdit(
+                self,
+                self.tr('Bit Rate'),
+                task.taskDetail.audioBitRate,
+                lambda t: task.taskDetail.setAudioBitRate(t),
+                minn=1,
+                maxn=2147483647,
+                unit='kb/s')
+
+        volumnEdit = PropLineEdit(
+                self,
+                self.tr('Volumn'),
+                task.taskDetail.audioVolumn,
+                lambda t: task.taskDetail.setAudioVolumn(t),
+                minn=1,
+                maxn=100,
+                unit='%')
+
+        subPage.addPropWidget(sampleRateEdit)
+        subPage.addPropWidget(bitRateEdit)
+        subPage.addPropWidget(volumnEdit)
+        self.addSubPivotPage(subPage, 'Subtitle', self.tr('Subtitle'))
+
 
     def addSubPivotPage(self, widget, routeKey, title):
         # widget.setAlignment(Qt.AlignTop | Qt.AlignLeft)
@@ -47,28 +160,9 @@ class TaskDetailWidget(QWidget):
         self.pivot.setCurrentItem(widget.objectName())
         qrouter.push(self.stackedWidget, widget.objectName())
 
-class VideoSubPage(QWidget):
+class TrackSubPage(QWidget):
 
-    def __init__(self, parent: QWidget | None, task: Task) -> None:
-        super().__init__(parent)
-        # header part
-        self.detailLayout = QHBoxLayout(self)
-
-        virtualParent = QWidget()
-        layout = FlowLayout(virtualParent, False)
-
-        bitRateLabel = StrongBodyLabel(self.tr("Bit Rate"), self)
-        bitRateLineEdit = LineEdit(self)
-
-        layout.addWidget(bitRateLabel)
-        layout.addWidget(bitRateLineEdit)
-
-        self.detailLayout.addWidget(virtualParent)
-
-
-class AudioSubPage(QWidget):
-
-    def __init__(self, parent: QWidget | None, task: Task) -> None:
+    def __init__(self, parent: QWidget | None, task: Task, page: str) -> None:
         super().__init__(parent)
         # header part
         audioDetailLayout = QHBoxLayout(self)
@@ -76,38 +170,27 @@ class AudioSubPage(QWidget):
         trackList = ListWidget(self)
 
         virtualParent = QWidget()
-        layout = FlowLayout(virtualParent, False)
+        self.layout = FlowLayout(virtualParent, False)
+
+        lineSpliter = QFrame(self)
+        lineSpliter.setObjectName("lineSpliterDetail")
+        lineSpliter.setStyleSheet("QFrame#lineSpliterDetail{color:lightgrey;widget:4px;height:100%;}")
+        lineSpliter.setFrameShape(QFrame.Shape.VLine)
 
         tracks = task.tracks
         for t in tracks:
-            if t.type == 'audio':
-                trackItem = QListWidgetItem("{} track: {}".format(t.type, t.name))
+            if t.type == page:
+                trackItem = QListWidgetItem(t.name)
                 trackItem.setCheckState(Qt.Checked)
                 trackList.addItem(trackItem)
 
         audioDetailLayout.addWidget(trackList)
+        audioDetailLayout.addWidget(lineSpliter)
         audioDetailLayout.addWidget(virtualParent)
 
         audioDetailLayout.setStretch(0, 1)
-        audioDetailLayout.setStretch(1, 3)
+        audioDetailLayout.setStretch(1, 1)
+        audioDetailLayout.setStretch(2, 4)
 
-class SubtitleSubPage(QWidget):
-
-    def __init__(self, parent: QWidget | None, task: Task) -> None:
-        super().__init__(parent)
-        # header part
-        self.vBoxLayout = QVBoxLayout(self)
-
-        trackList = ListWidget(self)
-        trackList.setDisabled(True)
-        #  trackList.setSelectionBehavior(QtWidgets.QAbstractItemView.SelectRows)
-        #  trackList.setSelectionMode(QtWidgets.QAbstractItemView.MultiSelection)
-
-        tracks = task.tracks
-        for t in tracks:
-            if t.type == 'subtitle':
-                trackItem = QListWidgetItem("{} track: {}".format(t.type, t.name))
-                trackList.addItem(trackItem)
-
-        self.vBoxLayout.addWidget(trackList)
-
+    def addPropWidget(self, widget):
+        self.layout.addWidget(widget)

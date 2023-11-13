@@ -5,7 +5,8 @@ from qfluentwidgets import SpinBox, LineEdit, Pivot, SpinBox, qrouter, ListWidge
 
 from ..common.entity.task import Task
 from ..common.entity.track import Track
-from ..common.prop_line_edit import PropLineEdit
+from ..common.widget.prop_line_edit import PropLineEdit
+from ..common.widget.prop_check_edit import PropCheckEdit
 
 class TaskDetailWidget(QWidget):
     """ track info pivot page """
@@ -40,36 +41,54 @@ class TaskDetailWidget(QWidget):
     def addVideoPage(self, task):
         subPage = TrackSubPage(self, task, 'video')
 
-        sampleRateEdit = PropLineEdit(
+        deinterlacingEdit = PropCheckEdit(
                 self,
-                self.tr('Sample Rate'),
-                task.taskDetail.audioSampleRate,
-                lambda t: task.taskDetail.setAudioSampleRate(t),
-                minn=1,
-                maxn=2147483647,
-                unit='Hz')
+                self.tr('Deinterlacing'),
+                lambda t: task.taskDetail.setDeinterlacing(t))
+
+        vFlipEdit = PropCheckEdit(
+                self,
+                self.tr('Vertical Flip'),
+                lambda t: task.taskDetail.setVerticalFlip(t))
+
+        hFlipEdit = PropCheckEdit(
+                self,
+                self.tr('Horizontal Flip'),
+                lambda t: task.taskDetail.setHorizontalFlip(t))
+
+        rotateEdit = PropLineEdit(
+                self,
+                self.tr('Rotation'),
+                task.taskDetail.rotation,
+                lambda t: task.taskDetail.setRotation(t),
+                minn=-360,
+                maxn=360,
+                unit='Degree')
 
         bitRateEdit = PropLineEdit(
                 self,
                 self.tr('Bit Rate'),
-                task.taskDetail.audioBitRate,
-                lambda t: task.taskDetail.setAudioBitRate(t),
+                task.taskDetail.videoBitRate,
+                lambda t: task.taskDetail.setVideoBitRate(t),
                 minn=1,
                 maxn=2147483647,
                 unit='kb/s')
 
-        volumnEdit = PropLineEdit(
+        speedEdit = PropLineEdit(
                 self,
-                self.tr('Volumn'),
-                task.taskDetail.audioVolumn,
-                lambda t: task.taskDetail.setAudioVolumn(t),
+                self.tr('Speed'),
+                task.taskDetail.speed,
+                lambda t: task.taskDetail.setSpeed(t),
                 minn=1,
                 maxn=100,
                 unit='%')
 
-        subPage.addPropWidget(sampleRateEdit)
+        subPage.addPropWidget(deinterlacingEdit)
+        subPage.addPropWidget(vFlipEdit)
+        subPage.addPropWidget(hFlipEdit)
+        subPage.addPropWidget(rotateEdit)
         subPage.addPropWidget(bitRateEdit)
-        subPage.addPropWidget(volumnEdit)
+        subPage.addPropWidget(speedEdit)
         self.addSubPivotPage(subPage, 'Video', self.tr('Video'))
         return subPage
 

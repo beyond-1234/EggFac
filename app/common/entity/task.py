@@ -58,10 +58,18 @@ class Task:
             print(e.stderr, file=sys.stderr)
             return None
 
+        videoBitRate = [t.probe["bit_rate"] for t in tracks if t.type == 'video']
+        rotation = 0
+        speed = 100
+        audioBitRate = [t.probe["bit_rate"] for t in tracks if t.type == 'audio']
+        audioBitRate = [t.probe["bit_rate"] for t in tracks if t.type == 'audio']
         audioBitRate = [t.probe["bit_rate"] for t in tracks if t.type == 'audio']
         audioSampleRate = [t.probe["sample_rate"] for t in tracks if t.type == 'audio']
         taskDetail = TaskDetail(
-                '',
+                extraCommand='',
+                videoBitRate=0 if len(videoBitRate) == 0 else int(videoBitRate[0]),
+                rotation=rotation,
+                speed=speed,
                 audioSampleRate=0 if len(audioSampleRate) == 0 else int(audioSampleRate[0]),
                 audioBitRate=0 if len(audioBitRate) == 0 else int(audioBitRate[0]),
                 audioVolumn=100

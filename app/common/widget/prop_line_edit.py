@@ -3,8 +3,8 @@ from PyQt5.QtCore import Qt, QModelIndex
 from PyQt5.QtWidgets import QWidget, QStackedWidget, QVBoxLayout, QHBoxLayout, QLabel, QListWidgetItem, QFrame
 from qfluentwidgets import SpinBox, LineEdit, Pivot, qrouter, ListWidget, FlowLayout, StrongBodyLabel
 
-from ..common.entity.task import Task
-from ..common.entity.track import Track
+from ..entity.task import Task
+from ..entity.track import Track
 
 class PropLineEdit(QWidget):
     """ property line edit """

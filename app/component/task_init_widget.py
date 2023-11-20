@@ -5,10 +5,11 @@ from PyQt5.QtCore import QSize, QUrl, Qt, QRectF
 from PyQt5.QtGui import QDesktopServices, QFont, QPixmap, QPainter, QColor, QBrush, QPainterPath
 from PyQt5.QtWidgets import QFrame, QPushButton, QTreeWidgetItem, QTreeWidgetItemIterator, QWidget, QHBoxLayout, QVBoxLayout, QLabel, QListWidgetItem
 
-from qfluentwidgets import ComboBox, LineEdit, PixmapLabel, ScrollArea, ToolButton, ToolTipFilter, TreeWidget, isDarkTheme, FluentIcon, FluentIcon, ListWidget, CheckBox
-from ..common.style_sheet import StyleSheet
+from qfluentwidgets import ComboBox, CheckBox
+
 from ..common.entity.task import Task
 from .track_info_widget import TrackInfoWidget
+from ..common.signal_bus import signalBus
 
 class TaskInitWidget(QWidget):
     """ task list """
@@ -45,6 +46,13 @@ class TaskInitWidget(QWidget):
         self.vBoxLayout.addLayout(formatLayout)
         self.vBoxLayout.addLayout(keepSettingLayout)
         self.vBoxLayout.addWidget(self.t)
+
+        signalBus.dialogYesButtonSignal.connect(self.yesButtonClickEvent)
+
+    def yesButtonClickEvent(self, code):
+        if self.taskInstace.code == code:
+            self.taskInstace.targetFormat = self.formatCombo.currentText()
+
 
     def onKeepOriginalChanged(self, state):
         if state == 0:

@@ -7,6 +7,7 @@ from ..common.entity.task import Task
 from ..common.entity.track import Track
 from ..common.widget.prop_line_edit import PropLineEdit
 from ..common.widget.prop_check_edit import PropCheckEdit
+from ..common.signal_bus import signalBus
 
 class TaskDetailWidget(QWidget):
     """ track info pivot page """
@@ -17,13 +18,7 @@ class TaskDetailWidget(QWidget):
         self.stackedWidget = QStackedWidget(self)
         self.pivot = Pivot(self)
         self.vBoxLayout = QVBoxLayout(self)
-
-        # self.videoTrackInterface = VideoSubPage(self, task)
-        # self.audioTrackInterface = AudioSubPage(self, task)
-        # self.subtitleTrackInterface = SubtitleSubPage(self, task)
-
-        # self.addSubPivotPage(self.videoTrackInterface, 'Video', self.tr('Video'))
-        # self.addSubPivotPage(self.subtitleTrackInterface, 'Subtitle', self.tr('Subtitle'))
+        self.task = task
 
         videoPage = self.addVideoPage(task)
         self.addAudioPage(task)
@@ -129,38 +124,8 @@ class TaskDetailWidget(QWidget):
         self.addSubPivotPage(subPage, 'Audio', self.tr('Audio'))
 
     def addSubtitlePage(self, task):
-        subPage = TrackSubPage(self, task, 'subtitle')
+        subPage = TrackSubPage(self, task, 'subtitle', False)
 
-        sampleRateEdit = PropLineEdit(
-                self,
-                self.tr('Sample Rate'),
-                task.taskDetail.audioSampleRate,
-                lambda t: task.taskDetail.setAudioSampleRate(t),
-                minn=1,
-                maxn=2147483647,
-                unit='Hz')
-
-        bitRateEdit = PropLineEdit(
-                self,
-                self.tr('Bit Rate'),
-                task.taskDetail.audioBitRate,
-                lambda t: task.taskDetail.setAudioBitRate(t),
-                minn=1,
-                maxn=2147483647,
-                unit='kb/s')
-
-        volumnEdit = PropLineEdit(
-                self,
-                self.tr('Volumn'),
-                task.taskDetail.audioVolumn,
-                lambda t: task.taskDetail.setAudioVolumn(t),
-                minn=1,
-                maxn=100,
-                unit='%')
-
-        subPage.addPropWidget(sampleRateEdit)
-        subPage.addPropWidget(bitRateEdit)
-        subPage.addPropWidget(volumnEdit)
         self.addSubPivotPage(subPage, 'Subtitle', self.tr('Subtitle'))
 
 
@@ -181,7 +146,7 @@ class TaskDetailWidget(QWidget):
 
 class TrackSubPage(QWidget):
 
-    def __init__(self, parent: QWidget | None, task: Task, page: str) -> None:
+    def __init__(self, parent: QWidget | None, task: Task, page: str, isSplite: bool = True) -> None:
         super().__init__(parent)
         # header part
         audioDetailLayout = QHBoxLayout(self)
@@ -204,12 +169,14 @@ class TrackSubPage(QWidget):
                 trackList.addItem(trackItem)
 
         audioDetailLayout.addWidget(trackList)
-        audioDetailLayout.addWidget(lineSpliter)
-        audioDetailLayout.addWidget(virtualParent)
+        if isSplite:
+            audioDetailLayout.addWidget(lineSpliter)
+            audioDetailLayout.addWidget(virtualParent)
 
-        audioDetailLayout.setStretch(0, 1)
-        audioDetailLayout.setStretch(1, 1)
-        audioDetailLayout.setStretch(2, 4)
+        if isSplite:
+            audioDetailLayout.setStretch(0, 1)
+            audioDetailLayout.setStretch(1, 1)
+            audioDetailLayout.setStretch(2, 4)
 
     def addPropWidget(self, widget):
         self.layout.addWidget(widget)

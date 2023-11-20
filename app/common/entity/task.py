@@ -130,6 +130,7 @@ class Task:
         if not os.path.exists(outputFolder):
             os.makedirs(outputFolder)
 
+        print(self.targetFormat)
         output = os.path.join(outputFolder, self.name + "." + self.targetFormat)
         socket_filename = self._create_progress_socket()
         try:

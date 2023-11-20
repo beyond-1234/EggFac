@@ -7,6 +7,7 @@ class SignalBus(QObject):
 
     switchToSampleCard = pyqtSignal(str, int)
     updateProgressSignal = pyqtSignal(str, int)
+    dialogYesButtonSignal = pyqtSignal(str)
 
 
 signalBus = SignalBus()

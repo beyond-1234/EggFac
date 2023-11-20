@@ -29,7 +29,7 @@ class TaskListItemWidget(QFrame):
         fileNameLabel = QLabel(task.name, self)
         fileNameLabel.setFont(QFont('Microsoft YaHei', 12, 64, False))
 
-        self.hintLabel = QLabel("progressing", self)
+        self.hintLabel = QLabel("", self)
         self.hintLabel.setFont(QFont('Microsoft YaHei', 10, 32, False))
 
         self.progress = ProgressBar(self)

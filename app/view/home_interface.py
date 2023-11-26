@@ -117,6 +117,7 @@ class HomeInterface(ScrollArea):
                 print('cancel detail clicked')
                 return
 
+        print(task.taskDetail)
         self.taskList.addTaskItem(task)
 
 

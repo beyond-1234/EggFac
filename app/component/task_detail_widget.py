@@ -7,6 +7,7 @@ from ..common.entity.task import Task
 from ..common.entity.track import Track
 from ..common.widget.prop_line_edit import PropLineEdit
 from ..common.widget.prop_check_edit import PropCheckEdit
+from ..common.widget.prop_combo_edit import PropComboEdit
 from ..common.signal_bus import signalBus
 
 class TaskDetailWidget(QWidget):
@@ -51,14 +52,11 @@ class TaskDetailWidget(QWidget):
                 self.tr('Horizontal Flip'),
                 lambda t: task.taskDetail.setHorizontalFlip(t))
 
-        rotateEdit = PropLineEdit(
+        rotateEdit = PropComboEdit(
                 self,
                 self.tr('Rotation'),
-                task.taskDetail.rotation,
-                lambda t: task.taskDetail.setRotation(t),
-                minn=-360,
-                maxn=360,
-                unit='Degree')
+                ['0', '90', '180', '270', '-90', '-180', '-270'],
+                lambda t: task.taskDetail.setRotation(t))
 
         bitRateEdit = PropLineEdit(
                 self,
@@ -69,14 +67,11 @@ class TaskDetailWidget(QWidget):
                 maxn=2147483647,
                 unit='kb/s')
 
-        speedEdit = PropLineEdit(
+        speedEdit = PropComboEdit(
                 self,
                 self.tr('Speed'),
-                task.taskDetail.speed,
-                lambda t: task.taskDetail.setSpeed(t),
-                minn=1,
-                maxn=100,
-                unit='%')
+                ['1.0x', '1.25x', '1.5x', '2x', '0.75x', '0.5x'],
+                lambda t: task.taskDetail.setSpeed(t))
 
         subPage.addPropWidget(deinterlacingEdit)
         subPage.addPropWidget(vFlipEdit)

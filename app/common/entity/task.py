@@ -66,7 +66,7 @@ class Task:
         audioBitRate = [t.probe["bit_rate"] for t in tracks if t.type == 'audio']
         audioSampleRate = [t.probe["sample_rate"] for t in tracks if t.type == 'audio']
         taskDetail = TaskDetail(
-                extraCommand='',
+                extraCommand={},
                 videoBitRate=0 if len(videoBitRate) == 0 else int(videoBitRate[0]),
                 rotation=rotation,
                 speed=speed,
@@ -133,18 +133,30 @@ class Task:
         print(self.targetFormat)
         output = os.path.join(outputFolder, self.name + "." + self.targetFormat)
         socket_filename = self._create_progress_socket()
-        try:
-            (
-            ffmpeg.input(self.path)
-                .output(output, vcodec='copy', acodec='copy')
-                .global_args('-nostats', '-progress', 'unix://{}'.format(socket_filename))
-                .overwrite_output()
-                .run(capture_stdout=True, capture_stderr=True)
-            )
-        except ffmpeg.Error as e:
-            print(e.stderr, file=sys.stderr)
-            self.status = TaskStatus.ABORTED
-
+        if self.isKeepingOriginalSeting is True:
+            try:
+                (
+                ffmpeg.input(self.path)
+                    .output(output, vcodec='copy', acodec='copy')
+                    .global_args('-nostats', '-progress', 'unix://{}'.format(socket_filename))
+                    .overwrite_output()
+                    .run(capture_stdout=True, capture_stderr=True)
+                )
+            except ffmpeg.Error as e:
+                print(e.stderr, file=sys.stderr)
+                self.status = TaskStatus.ABORTED
+        else:
+            try:
+                (
+                ffmpeg.input(self.path)
+                    .output(output, vf=self.taskDetail.extraCommand['setVf'])
+                    .global_args('-nostats', '-progress', 'unix://{}'.format(socket_filename))
+                    .overwrite_output()
+                    .run(capture_stdout=True, capture_stderr=True)
+                )
+            except ffmpeg.Error as e:
+                print(e.stderr, file=sys.stderr)
+                self.status = TaskStatus.ABORTED
 
     def stopTask(self):
         pass

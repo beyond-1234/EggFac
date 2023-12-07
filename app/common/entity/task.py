@@ -1,9 +1,5 @@
 import os
 import sys
-import ffmpeg
-import _thread
-import tempfile
-import socket
 import uuid
 
 from dataclasses import dataclass
@@ -13,6 +9,8 @@ from .track import Track
 from .task_detail import TaskDetail
 from .task_status import TaskStatus
 from ..config import cfg
+from ..converter.ffmpeg_wrapper import FFmpegWrapper
+from ..converter.ffmpeg_probe import FFmpegProbe
 
 @dataclass
 class Task:
@@ -49,6 +47,12 @@ class Task:
         duration = 0.0
         tracks = []
 
+        # todo
+        # task should only be used to display info
+        # task detail should be merge into task and track
+        # task detail widget should directly manipulate FFmpegWrapper
+
+        # probe = FFmpegWrapper.getInfo(path)
         try:
             probe = ffmpeg.probe(path)
             duration = float(probe["format"]["duration"])
@@ -80,49 +84,8 @@ class Task:
     def startTask(self):
         print("starting task threaded")
         self.status = TaskStatus.STARTED
-        _thread.start_new_thread(self.doStartTask, ())
+        self.doStartTask()
 
-    def _do_watch_progress(self, sock, handler):
-        connection, client_address = sock.accept()
-        data = b''
-        try:
-            while True:
-                more_data = connection.recv(16)
-                if not more_data:
-                    break
-                data += more_data
-                lines=  data.split(b'\n')
-                for line in lines[:-1]:
-                    line = line.decode()
-                    parts = line.split('=')
-                    key = parts[0] if len(parts) > 0 else None
-                    value = parts[1] if len(parts) > 0 else None
-                    handler(key, value)
-                data = lines[-1]
-        finally:
-            connection.close()
-
-    def handle_progress(self, key, value):
-        if key == 'out_time_ms':
-            time = round(float(value) / 1000000, 2)
-            self.progress = int(time / self.duration * 100)
-            signalBus.updateProgressSignal.emit(self.code, self.progress)
-            # print("current progress {}  ==> percentage {:.0%}".format(time, time / self.duration))
-        elif key == 'progress' and value == 'end':
-            print("current task ended")
-            self.progress = int(100)
-            self.status = TaskStatus.ENDED
-            signalBus.updateProgressSignal.emit(self.code, 100)
-
-    def _create_progress_socket(self):
-        """ create unix socket and listen to ffmpeg progress events """
-        tmpdir = tempfile.mkdtemp()
-        socket_filename = os.path.join(tmpdir, 'sock')
-        sock = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
-        sock.bind(socket_filename)
-        sock.listen(1)
-        _thread.start_new_thread(self._do_watch_progress, (sock, self.handle_progress))
-        return socket_filename
 
     def doStartTask(self):
         outputFolder = cfg.get(cfg.outputFolder)
@@ -132,31 +95,7 @@ class Task:
 
         print(self.targetFormat)
         output = os.path.join(outputFolder, self.name + "." + self.targetFormat)
-        socket_filename = self._create_progress_socket()
-        if self.isKeepingOriginalSeting is True:
-            try:
-                (
-                ffmpeg.input(self.path)
-                    .output(output, vcodec='copy', acodec='copy')
-                    .global_args('-nostats', '-progress', 'unix://{}'.format(socket_filename))
-                    .overwrite_output()
-                    .run(capture_stdout=True, capture_stderr=True)
-                )
-            except ffmpeg.Error as e:
-                print(e.stderr, file=sys.stderr)
-                self.status = TaskStatus.ABORTED
-        else:
-            try:
-                (
-                ffmpeg.input(self.path)
-                    .output(output, vf=self.taskDetail.extraCommand['setVf'])
-                    .global_args('-nostats', '-progress', 'unix://{}'.format(socket_filename))
-                    .overwrite_output()
-                    .run(capture_stdout=True, capture_stderr=True)
-                )
-            except ffmpeg.Error as e:
-                print(e.stderr, file=sys.stderr)
-                self.status = TaskStatus.ABORTED
+        FFmpegWrapper(self).startTask()
 
     def stopTask(self):
         pass

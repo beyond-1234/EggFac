@@ -1,15 +1,14 @@
 import subprocess
 import threading
 
-from ..entity.task import Task
 from ..signal_bus import signalBus
 
 class FFmpegExecutor(threading.Thread):
 
-    def __init__(self, command, task: Task):
+    def __init__(self, command, taskCode: str):
         threading.Thread.__init__(self)
         self.command = command
-        self.task = task
+        self.taskCode = taskCode
 
         # pattern 1 is not been used
         self.progressPattern1 = "size=\\s*([0-9]+)kB\\s+time=\\s*([0-9]+\\.[0-9]+)\\s+bitrate=\\s*([0-9]+\\.[0-9]+)kbits/s"
@@ -55,10 +54,10 @@ class FFmpegExecutor(threading.Thread):
                     sec = float(progressMatch.group(4))
                     progress = hour*3600 + min*60 + sec;
 
-                signalBus.updateProgressSignal.emit(self.task.code, (progress / duration * 100))
+                signalBus.updateProgressSignal.emit(self.taskCode, (progress / duration * 100))
 
             if duration != 0 and progress > 99:
-                signalBus.updateProgressSignal.emit(self.task.code, 100)
+                signalBus.updateProgressSignal.emit(self.taskCode, 100)
 
         process.stdout.close()
         process.stderr.close()

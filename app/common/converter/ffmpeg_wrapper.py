@@ -1,13 +1,11 @@
 
 from app.common.converter.ffmpeg_probe import FFmpegProbe
-from ..entity.task import Task
 from .ffmpeg_executor import FFmpegExecutor
 
 class FFmpegWrapper:
 
-    def __init__(self, task: Task):
+    def __init__(self):
         self.commandList = ['ffmpeg'];
-        self.task = task
 
     def _addInputFile(self, filePath):
         self.commandList.append("-i")
@@ -29,7 +27,7 @@ class FFmpegWrapper:
         return FFmpegProbe.getProbe(path)
 
 
-    def startTask(self):
+    def startTask(self, taskCode: str):
         command = ' '.join(self.commandList)
-        thread = FFmpegExecutor(command, self.task)
+        thread = FFmpegExecutor(command, taskCode)
         thread.start()

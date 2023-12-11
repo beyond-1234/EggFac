@@ -40,12 +40,12 @@ class TaskInitWidget(QWidget):
         keepSettingLayout.addWidget(keepSettingLabel)
         keepSettingLayout.addWidget(isKeepingSettingCheckBox)
 
-        self.t = TrackInfoWidget(self, task)
+        # self.t = TrackInfoWidget(self, task)
 
         self.vBoxLayout.addWidget(title)
         self.vBoxLayout.addLayout(formatLayout)
         self.vBoxLayout.addLayout(keepSettingLayout)
-        self.vBoxLayout.addWidget(self.t)
+        # self.vBoxLayout.addWidget(self.t)
 
         signalBus.dialogYesButtonSignal.connect(self.yesButtonClickEvent)
 

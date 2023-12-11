@@ -37,6 +37,10 @@ class TaskDetailWidget(QWidget):
     def addVideoPage(self, task):
         subPage = TrackSubPage(self, task, 'video')
 
+        # todo use signal to setup command list in ffmpeg wrapper
+        # task detail should be deprecated
+        # same for audio and sub part
+
         deinterlacingEdit = PropCheckEdit(
                 self,
                 self.tr('Deinterlacing'),

@@ -1,6 +1,7 @@
 import os
 import sys
 import uuid
+import ffmpeg
 
 from dataclasses import dataclass
 
@@ -95,7 +96,7 @@ class Task:
 
         print(self.targetFormat)
         output = os.path.join(outputFolder, self.name + "." + self.targetFormat)
-        FFmpegWrapper(self).startTask()
+        FFmpegWrapper(self).startTask(self.code)
 
     def stopTask(self):
         pass

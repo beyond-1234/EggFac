@@ -38,7 +38,7 @@ class TaskDetailWidget(QWidget):
         subPage = TrackSubPage(self, task, 'video')
 
         # todo use signal to setup command list in ffmpeg wrapper
-        # task detail should be deprecated
+        # task detail is used to decouple ffmpeg command and interface
         # same for audio and sub part
 
         deinterlacingEdit = PropCheckEdit(
@@ -167,6 +167,9 @@ class TrackSubPage(QWidget):
                 trackItem.setCheckState(Qt.Checked)
                 trackList.addItem(trackItem)
 
+        trackList.currentItemChanged.connect(self.onTrackChanged)
+        signalBus.generateFFmpegCommandSignal.connect(onGeneratingFFmpegCommand)
+
         audioDetailLayout.addWidget(trackList)
         if isSplite:
             audioDetailLayout.addWidget(lineSpliter)
@@ -179,3 +182,11 @@ class TrackSubPage(QWidget):
 
     def addPropWidget(self, widget):
         self.layout.addWidget(widget)
+
+    def onTrackChanged(self, current, previous):
+        """ update interface info when changing track """
+        pass
+
+    def onGeneratingFFmpegCommand(self, code: str):
+        if self.task.code == code:
+            self.task.wrapper.fillCommandList(self.task.taskDetail.extraCommand)

@@ -8,6 +8,7 @@ class SignalBus(QObject):
     switchToSampleCard = pyqtSignal(str, int)
     updateProgressSignal = pyqtSignal(str, int)
     dialogYesButtonSignal = pyqtSignal(str)
+    generateFFmpegCommandSignal = pyqtSignal(str)
 
 
 signalBus = SignalBus()

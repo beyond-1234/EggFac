@@ -31,3 +31,6 @@ class FFmpegWrapper:
         command = ' '.join(self.commandList)
         thread = FFmpegExecutor(command, taskCode)
         thread.start()
+
+    def fillCommandList(self, commandlist: list):
+        pass

@@ -12,6 +12,7 @@ from app.component.task_list_widget import TaskListWidget
 from app.component.task_detail_widget import TaskDetailWidget
 from ..common.entity.task import Task
 from ..common.style_sheet import StyleSheet
+from ..common.signal_bus import signalBus
 
 
 class HeaderWidget(QWidget):
@@ -116,6 +117,8 @@ class HomeInterface(ScrollArea):
             if not taskDetailDialog.exec():
                 print('cancel detail clicked')
                 return
+            
+        signalBus.generateFFmpegCommandSginal.emit(task.code)
 
         print(task.taskDetail)
         self.taskList.addTaskItem(task)

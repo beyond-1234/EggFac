@@ -27,6 +27,7 @@ class Task:
     tracks: list
     isKeepingOriginalSeting: bool
     taskDetail: TaskDetail
+    wrapper: FFmpegWrapper
 
     @staticmethod
     def initTaskOnlySource(path):
@@ -80,7 +81,11 @@ class Task:
                 audioVolumn=100
                 )
 
-        return Task(uuid.uuid1().__str__(), path, name, format, targetFormat, duration, 0, TaskStatus.CREATED, tracks, True, taskDetail)
+        t = Task(uuid.uuid1().__str__(), path, name, format, targetFormat, duration, 0, TaskStatus.CREATED, tracks, True, taskDetail, FFmpegWrapper())
+
+        signalBus.generateFFmpegCommandSignal.connect(onGeneratingFFmpegCommand)
+        
+        return t
 
     def startTask(self):
         print("starting task threaded")
@@ -96,7 +101,7 @@ class Task:
 
         print(self.targetFormat)
         output = os.path.join(outputFolder, self.name + "." + self.targetFormat)
-        FFmpegWrapper(self).startTask(self.code)
+        self.wrapper.startTask(self.code)
 
     def stopTask(self):
         pass

@@ -1,36 +1,118 @@
+import os
+import signal
+import uuid
 
 from app.common.converter.ffmpeg_probe import FFmpegProbe
+from app.common.entity.task import Task
+from app.common.entity.task_status import TaskStatus
+from app.common.signal_bus import signalBus
 from .ffmpeg_executor import FFmpegExecutor
 
+
 class FFmpegWrapper:
-
     def __init__(self):
-        self.commandList = ['ffmpeg'];
+        # self.commandList = ["ffmpeg"]
+        self.taskList = list()
 
-    def _addInputFile(self, filePath):
-        self.commandList.append("-i")
-        self.commandList.append(filePath)
+        signalBus.updateTaskPidSignal.connect(self.updateTaskPid)
+        signalBus.updateTaskTargetFormatSignal.connect(self.updateTaskTargetFormat)
+        signalBus.updateTaskIsKeepOriginalSignal.connect(
+            self.updateIsKeepOriginalSetting
+        )
 
-    def _addOutputFile(self, filePath):
-        self.commandList.append(filePath)
+    # def _addInputFile(self, filePath):
+    #     self.commandList.append("-i")
+    #     self.commandList.append(filePath)
+    #
+    # def _addOutputFile(self, filePath):
+    #     self.commandList.append(filePath)
+    #
+    # def _addCopyOption(self, isVideoCopy, isAudioCopy):
+    #     if isVideoCopy:
+    #         self.commandList.append("-c:v")
+    #         self.commandList.append("copy")
+    #     if isAudioCopy:
+    #         self.commandList.append("-c:a")
+    #         self.commandList.append("copy")
 
-    def _addCopyOption(self, isVideoCopy, isAudioCopy):
-        if isVideoCopy:
-            self.commandList.append("-c:v")
-            self.commandList.append("copy")
-        if isAudioCopy:
-            self.commandList.append("-c:a")
-            self.commandList.append("copy")
+    def initTask(self, path: str):
+        if not os.path.exists(path):
+            print("file not exists")
+            return None
 
-    @staticmethod
-    def getInfo(path: str):
-        return FFmpegProbe.getProbe(path)
+        if not os.path.isfile(path):
+            print("file is dir")
+            return None
 
+        fileTuple = os.path.splitext(path)
+        name = os.path.basename(fileTuple[0])
+        probe = FFmpegProbe.getProbe(path)
+        t = Task(
+            code=uuid.uuid1().__str__(),
+            path=path,
+            name=name,
+            targetFormat="",
+            progress=0,
+            status=TaskStatus.CREATED,
+            isKeepingOriginalSeting=True,
+            probe=probe,
+            pid=-1,
+        )
+        self.taskList.append(t)
+        return t
 
     def startTask(self, taskCode: str):
-        command = ' '.join(self.commandList)
-        thread = FFmpegExecutor(command, taskCode)
-        thread.start()
+        t = self.__getTaskByCode(taskCode)
+        if t is not None:
+            thread = FFmpegExecutor(t.getCommand(), t.code)
+            thread.start()
 
-    def fillCommandList(self, commandlist: list):
-        pass
+    def stopTask(self, taskCode):
+        for item in self.taskList:
+            if item.code == taskCode:
+                try:
+                    os.kill(item.pid, signal.SIGKILL)
+                    print(f"进程 {item.pid} 已被成功终止.")
+                except ProcessLookupError:
+                    print(f"进程 {item.pid} 不存在.")
+                except PermissionError:
+                    print(f"没有足够的权限杀死进程 {item.pid}.")
+                break
+
+    def deleteTask(self, taskCode):
+        for item in self.taskList:
+            if item.code == taskCode:
+                self.taskList.remove(item)
+                try:
+                    os.kill(item.pid, signal.SIGKILL)
+                    print(f"进程 {item.pid} 已被成功终止.")
+                except ProcessLookupError:
+                    print(f"进程 {item.pid} 不存在.")
+                except PermissionError:
+                    print(f"没有足够的权限杀死进程 {item.pid}.")
+                break
+
+    def updateTaskPid(self, taskCode, pid):
+        t = self.__getTaskByCode(taskCode)
+        if t is not None:
+            t.pid = pid
+
+    def updateTaskTargetFormat(self, taskCode, format):
+        t = self.__getTaskByCode(taskCode)
+        if t is not None:
+            t.targetFormat = format
+
+    def updateIsKeepOriginalSetting(self, taskCode, res):
+        t = self.__getTaskByCode(taskCode)
+        if t is not None:
+            t.isKeepingOriginalSeting = res
+
+    def __getTaskByCode(self, taskCode) -> Task | None:
+        filtered_list = list(filter(lambda t: t.code == taskCode, self.taskList))
+        if len(filtered_list) == 0:
+            return None
+
+        return filtered_list[0]
+
+
+ffmpegWrapper = FFmpegWrapper()

@@ -1,35 +1,9 @@
 # coding:utf-8
-from PyQt5 import QtCore
-from PyQt5.QtCore import QSize, QUrl, Qt, QRectF
-from PyQt5.QtGui import (
-    QDesktopServices,
-    QFont,
-    QPixmap,
-    QPainter,
-    QColor,
-    QBrush,
-    QPainterPath,
-)
-from PyQt5.QtWidgets import (
-    QFrame,
-    QProgressBar,
-    QWidget,
-    QHBoxLayout,
-    QVBoxLayout,
-    QLabel,
-    QFileDialog,
-)
+from PyQt5.QtCore import Qt
+from PyQt5.QtWidgets import QFrame, QWidget, QHBoxLayout, QVBoxLayout, QFileDialog
 from qfluentwidgets import (
-    InfoBar,
-    InfoBarPosition,
-    PixmapLabel,
-    PushButton,
     ScrollArea,
-    ToolButton,
     StrongBodyLabel,
-    ToolTipFilter,
-    isDarkTheme,
-    FluentIcon,
     FluentIcon,
     Action,
     CommandBar,
@@ -39,7 +13,6 @@ from app.component.dialog import CustomDialog
 from app.component.task_init_widget import TaskInitWidget
 from app.component.task_list_widget import TaskListWidget
 from app.component.task_detail_widget import TaskDetailWidget
-from ..common.entity.task import Task
 from ..common.style_sheet import StyleSheet
 from ..common.signal_bus import signalBus
 

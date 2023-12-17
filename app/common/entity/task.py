@@ -1,16 +1,7 @@
-import os
-import sys
-import uuid
-import ffmpeg
-
 from dataclasses import dataclass
 
-from ..signal_bus import signalBus
-from .track import Track
 from .task_detail import TaskDetail
 from .task_status import TaskStatus
-from ..config import cfg
-from ..converter.ffmpeg_wrapper import FFmpegWrapper
 from ..converter.ffmpeg_probe import FFmpegProbe
 
 
@@ -26,6 +17,7 @@ class Task:
     status: TaskStatus
     isKeepingOriginalSeting: bool
     probe: FFmpegProbe
+    taskDetail: TaskDetail
     pid: int
 
     def getCommand(self):

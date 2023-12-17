@@ -4,6 +4,7 @@ import uuid
 
 from app.common.converter.ffmpeg_probe import FFmpegProbe
 from app.common.entity.task import Task
+from app.common.entity.task_detail import TaskDetail
 from app.common.entity.task_status import TaskStatus
 from app.common.signal_bus import signalBus
 from .ffmpeg_executor import FFmpegExecutor
@@ -14,6 +15,9 @@ class FFmpegWrapper:
         # self.commandList = ["ffmpeg"]
         self.taskList = list()
 
+        signalBus.startTaskSignal.connect(self.startTask)
+        signalBus.deleteTaskSignal.connect(self.deleteTask)
+        signalBus.updateTaskPidSignal.connect(self.updateTaskPid)
         signalBus.updateTaskPidSignal.connect(self.updateTaskPid)
         signalBus.updateTaskTargetFormatSignal.connect(self.updateTaskTargetFormat)
         signalBus.updateTaskIsKeepOriginalSignal.connect(
@@ -56,6 +60,7 @@ class FFmpegWrapper:
             status=TaskStatus.CREATED,
             isKeepingOriginalSeting=True,
             probe=probe,
+            taskDetail=TaskDetail(),
             pid=-1,
         )
         self.taskList.append(t)
@@ -69,27 +74,31 @@ class FFmpegWrapper:
 
     def stopTask(self, taskCode):
         for item in self.taskList:
-            if item.code == taskCode:
+            if item.code == taskCode and item.pid != -1:
                 try:
                     os.kill(item.pid, signal.SIGKILL)
-                    print(f"进程 {item.pid} 已被成功终止.")
+                    print(f"process {item.pid} has been killed.")
                 except ProcessLookupError:
-                    print(f"进程 {item.pid} 不存在.")
+                    print(f"process {item.pid} not exists.")
                 except PermissionError:
-                    print(f"没有足够的权限杀死进程 {item.pid}.")
+                    print(f"permission denied to kill {item.pid}.")
+                except Exception as e:
+                    print("killing process failed :", str(e))
                 break
 
     def deleteTask(self, taskCode):
         for item in self.taskList:
-            if item.code == taskCode:
-                self.taskList.remove(item)
+            if item.code == taskCode and item.pid != -1:
                 try:
                     os.kill(item.pid, signal.SIGKILL)
-                    print(f"进程 {item.pid} 已被成功终止.")
+                    print(f"process {item.pid} has been killed.")
+                    self.taskList.remove(item)
                 except ProcessLookupError:
-                    print(f"进程 {item.pid} 不存在.")
+                    print(f"process {item.pid} not exists.")
                 except PermissionError:
-                    print(f"没有足够的权限杀死进程 {item.pid}.")
+                    print(f"permission denied to kill {item.pid}.")
+                except Exception as e:
+                    print("killing process failed :", str(e))
                 break
 
     def updateTaskPid(self, taskCode, pid):

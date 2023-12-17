@@ -16,6 +16,9 @@ class TaskDetail:
     audioBitRate: int
     audioVolumn: int
 
+    def __init__(self):
+        self.extraCommand = {}
+
     # video
     def setDeinterlacing(self, t):
         # 0 = false; 2 = true
@@ -53,13 +56,13 @@ class TaskDetail:
         self.__addVideoFilterGraph("setpts=%s*PTS" % t.replace("x", ""), t != "1.0x")
 
     # audio
-    def setAudioSampleRate(self, val):
+    def setAudioSampleRate(self, index, val):
         self.audioSampleRate = val
 
-    def setAudioBitRate(self, val):
+    def setAudioBitRate(self, index, val):
         self.audioBitRate = val
 
-    def setAudioVolumn(self, val):
+    def setAudioVolumn(self, index, val):
         self.audioVolumn = val
 
     def __addVideoFilterGraph(self, filterName: str, addOrDelete: bool):

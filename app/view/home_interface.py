@@ -97,7 +97,7 @@ class HomeInterface(ScrollArea):
             print("cancel clicked")
             return
 
-        if not task.isKeepingOriginalSeting:
+        if not task.isKeepingOriginalSetting:
             # open detail setting dialog
             taskDetailDialog = CustomDialog(TaskDetailWidget(self, task), self, 600)
             if not taskDetailDialog.exec():

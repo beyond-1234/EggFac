@@ -58,7 +58,7 @@ class FFmpegWrapper:
             targetFormat="",
             progress=0,
             status=TaskStatus.CREATED,
-            isKeepingOriginalSeting=True,
+            isKeepingOriginalSetting=True,
             probe=probe,
             taskDetail=TaskDetail(),
             pid=-1,
@@ -114,7 +114,7 @@ class FFmpegWrapper:
     def updateIsKeepOriginalSetting(self, taskCode, res):
         t = self.__getTaskByCode(taskCode)
         if t is not None:
-            t.isKeepingOriginalSeting = res
+            t.isKeepingOriginalSetting = res
 
     def __getTaskByCode(self, taskCode) -> Task | None:
         filtered_list = list(filter(lambda t: t.code == taskCode, self.taskList))

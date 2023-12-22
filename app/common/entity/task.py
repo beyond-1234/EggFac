@@ -15,7 +15,7 @@ class Task:
     targetFormat: str
     progress: int
     status: TaskStatus
-    isKeepingOriginalSeting: bool
+    isKeepingOriginalSetting: bool
     probe: FFmpegProbe
     taskDetail: TaskDetail
     pid: int

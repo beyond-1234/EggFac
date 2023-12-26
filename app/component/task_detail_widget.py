@@ -155,7 +155,7 @@ class TaskDetailWidget(QWidget):
             100,
             lambda t: task.taskDetail.setAudioVolumn(subPage.trackList.currentRow(), t),
             minn=1,
-            maxn=100,
+            maxn=200,
             unit="%",
         )
 

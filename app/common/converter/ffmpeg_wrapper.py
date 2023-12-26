@@ -8,6 +8,7 @@ from app.common.entity.task_detail import TaskDetail
 from app.common.entity.task_status import TaskStatus
 from app.common.signal_bus import signalBus
 from .ffmpeg_executor import FFmpegExecutor
+from app.common.config import cfg
 
 
 class FFmpegWrapper:
@@ -20,6 +21,7 @@ class FFmpegWrapper:
         signalBus.updateTaskPidSignal.connect(self.updateTaskPid)
         signalBus.updateTaskPidSignal.connect(self.updateTaskPid)
         signalBus.updateTaskTargetFormatSignal.connect(self.updateTaskTargetFormat)
+        signalBus.updateTaskCommandSignal.connect(self.updateTaskCommand)
         signalBus.updateTaskIsKeepOriginalSignal.connect(
             self.updateIsKeepOriginalSetting
         )
@@ -60,7 +62,7 @@ class FFmpegWrapper:
             status=TaskStatus.CREATED,
             isKeepingOriginalSetting=True,
             probe=probe,
-            taskDetail=TaskDetail(),
+            taskDetail=TaskDetail(path),
             pid=-1,
         )
         self.taskList.append(t)
@@ -115,6 +117,34 @@ class FFmpegWrapper:
         t = self.__getTaskByCode(taskCode)
         if t is not None:
             t.isKeepingOriginalSetting = res
+            if res:
+                outputPath = os.path.join(
+                    cfg.get(cfg.outputFolder), t.name + "." + t.targetFormat
+                )
+                t.taskDetail.commandList = [
+                    "ffmpeg",
+                    "-i",
+                    t.path,
+                    "-c:v",
+                    "-c:a",
+                    outputPath,
+                ]
+            else:
+                t.taskDetail.commandList = []
+
+    def updateTaskCommand(self, taskCode):
+        t = self.__getTaskByCode(taskCode)
+        if t is None:
+            return
+
+        t.taskDetail.commandList = ["ffmpeg", "-i", t.path]
+        outputPath = os.path.join(
+            cfg.get(cfg.outputFolder), t.name + "." + t.targetFormat
+        )
+
+        t.taskDetail.commandList.extend(list(t.taskDetail.extraCommand.values()))
+
+        t.taskDetail.commandList.append(outputPath)
 
     def __getTaskByCode(self, taskCode) -> Task | None:
         filtered_list = list(filter(lambda t: t.code == taskCode, self.taskList))

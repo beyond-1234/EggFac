@@ -7,6 +7,7 @@ class TaskDetail:
     """任务详情实体类"""
 
     extraCommand: dict
+    commandList: list
     # video
     videoBitRate: int
     rotation: int
@@ -16,8 +17,10 @@ class TaskDetail:
     audioBitRate: int
     audioVolumn: int
 
-    def __init__(self):
+    def __init__(self, path: str):
         self.extraCommand = {}
+        self.extraCommand["input"] = "-i " + path
+        self.extraCommand["output"] = path.split()
 
     # video
     def setDeinterlacing(self, t):
@@ -58,18 +61,23 @@ class TaskDetail:
     # audio
     def setAudioSampleRate(self, index, val):
         self.audioSampleRate = val
+        self.extraCommand["setAudioSampling"] = "-ar  " + val
 
     def setAudioBitRate(self, index, val):
         self.audioBitRate = val
+        self.extraCommand["setAudioBitRate"] = "-b:a " + self.__human_format(val)
 
     def setAudioVolumn(self, index, val):
         self.audioVolumn = val
+        self.__addAudioFilterGraph("volumn=" + val / 100, val == 100)
 
     def __addVideoFilterGraph(self, filterName: str, addOrDelete: bool):
         vfCommand = self.extraCommand.get("setVf")
         if vfCommand is None:
-            self.extraCommand["setVf"] = "%s" % filterName
+            self.extraCommand["setVf"] = "-vf %s" % filterName
             return
+
+        vfCommand = vfCommand.replace("-vf", "")
 
         cList = vfCommand.split(",")
 
@@ -78,7 +86,24 @@ class TaskDetail:
         else:
             cList.remove(filterName)
 
-        self.extraCommand["setVf"] = (",").join(list((dict.fromkeys(cList))))
+        self.extraCommand["setVf"] = "-vf " + (",").join(cList)
+
+    def __addAudioFilterGraph(self, filterName: str, addOrDelete: bool):
+        vfCommand = self.extraCommand.get("setAf")
+        if vfCommand is None:
+            self.extraCommand["setAf"] = "-af %s" % filterName
+            return
+
+        vfCommand = vfCommand.replace("-af", "")
+
+        cList = vfCommand.split(",")
+
+        if addOrDelete is True:
+            cList.append(filterName)
+        else:
+            cList.remove(filterName)
+
+        self.extraCommand["setAf"] = "-af " + (",").join(cList)
 
     def __human_format(self, number):
         units = ["", "K", "M", "G", "T", "P"]

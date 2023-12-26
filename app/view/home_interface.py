@@ -104,6 +104,7 @@ class HomeInterface(ScrollArea):
                 print("cancel detail clicked")
                 return
 
+        signalBus.updateTaskCommandSignal.emit(task.code)
         self.taskList.addTaskItem(task)
 
     def checkFile(self, filePath):

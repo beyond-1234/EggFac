@@ -60,16 +60,16 @@ class TaskDetail:
 
     # audio
     def setAudioSampleRate(self, index, val):
-        self.audioSampleRate = val
-        self.extraCommand["setAudioSampling"] = "-ar  " + val
+        # self.audioSampleRate = val
+        self.extraCommand["setAudioSampling%d" % index] = "-map 0:a:%d -ar  %s" % (index, val)
 
     def setAudioBitRate(self, index, val):
         self.audioBitRate = val
-        self.extraCommand["setAudioBitRate"] = "-b:a " + self.__human_format(val)
+        self.extraCommand["setAudioBitRate%d" % index] = "-map 0:a:%d -b:a %s" % (index, self.__human_format(val))
 
     def setAudioVolumn(self, index, val):
         self.audioVolumn = val
-        self.__addAudioFilterGraph("volumn=" + val / 100, val == 100)
+        self.__addAudioFilterGraph(index, "volumn=" + val / 100, val == 100)
 
     def __addVideoFilterGraph(self, filterName: str, addOrDelete: bool):
         vfCommand = self.extraCommand.get("setVf")
@@ -88,13 +88,13 @@ class TaskDetail:
 
         self.extraCommand["setVf"] = "-vf " + (",").join(cList)
 
-    def __addAudioFilterGraph(self, filterName: str, addOrDelete: bool):
+    def __addAudioFilterGraph(self, index, filterName: str, addOrDelete: bool):
         vfCommand = self.extraCommand.get("setAf")
         if vfCommand is None:
-            self.extraCommand["setAf"] = "-af %s" % filterName
+            self.extraCommand["setAf%d" % index] = "-map 0:a:%d -af %s" % (index, filterName)
             return
 
-        vfCommand = vfCommand.replace("-af", "")
+        vfCommand = vfCommand.replace("-af%d" % index, "")
 
         cList = vfCommand.split(",")
 
@@ -103,7 +103,7 @@ class TaskDetail:
         else:
             cList.remove(filterName)
 
-        self.extraCommand["setAf"] = "-af " + (",").join(cList)
+        self.extraCommand["setAf%d" % index] = "-map 0:a:%d -af %s" % (index, (",").join(cList))
 
     def __human_format(self, number):
         units = ["", "K", "M", "G", "T", "P"]

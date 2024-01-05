@@ -13,7 +13,7 @@ class SignalBus(QObject):
     updateTaskPidSignal = pyqtSignal(str, int)
     updateTaskTargetFormatSignal = pyqtSignal(str, str)
     updateTaskIsKeepOriginalSignal = pyqtSignal(str, bool)
-    updateTaskCommandSignal = pyqtSignal(str)
+    updateTaskCommandSignal = pyqtSignal(str, dict)
     startTaskSignal = pyqtSignal(str)
     deleteTaskSignal = pyqtSignal(str)
 

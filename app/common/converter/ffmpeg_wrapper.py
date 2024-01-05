@@ -132,7 +132,7 @@ class FFmpegWrapper:
             else:
                 t.taskDetail.commandList = []
 
-    def updateTaskCommand(self, taskCode):
+    def updateTaskCommand(self, taskCode, extraCommand):
         t = self.__getTaskByCode(taskCode)
         if t is None:
             return
@@ -142,7 +142,7 @@ class FFmpegWrapper:
             cfg.get(cfg.outputFolder), t.name + "." + t.targetFormat
         )
 
-        t.taskDetail.commandList.extend(list(t.taskDetail.extraCommand.values()))
+        t.taskDetail.commandList.extend(list(extraCommand.values()))
 
         t.taskDetail.commandList.append(outputPath)
 

@@ -19,7 +19,6 @@ class FFmpegWrapper:
         signalBus.startTaskSignal.connect(self.startTask)
         signalBus.deleteTaskSignal.connect(self.deleteTask)
         signalBus.updateTaskPidSignal.connect(self.updateTaskPid)
-        signalBus.updateTaskPidSignal.connect(self.updateTaskPid)
         signalBus.updateTaskTargetFormatSignal.connect(self.updateTaskTargetFormat)
         signalBus.updateTaskCommandSignal.connect(self.updateTaskCommand)
         signalBus.updateTaskIsKeepOriginalSignal.connect(
@@ -121,6 +120,7 @@ class FFmpegWrapper:
                 outputPath = os.path.join(
                     cfg.get(cfg.outputFolder), t.name + "." + t.targetFormat
                 )
+                # An empty stream specifier matches all streams. For example, -codec copy or -codec: copy would copy all the streams without reencoding.
                 t.taskDetail.commandList = [
                     "ffmpeg",
                     "-i",

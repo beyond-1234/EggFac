@@ -127,6 +127,7 @@ class FFmpegWrapper:
                     t.path,
                     "-c:v",
                     "-c:a",
+                    "-c:s",
                     outputPath,
                 ]
             else:

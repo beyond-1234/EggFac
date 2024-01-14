@@ -195,7 +195,7 @@ class TrackSubPage(QWidget):
         self.virtualParent = QWidget()
         self.propLayout = FlowLayout(self.virtualParent, False)
 
-        signalBus.generateFFmpegCommandSignal.connect(self.onGeneratingFFmpegCommand)
+        # signalBus.generateFFmpegCommandSignal.connect(self.onGeneratingFFmpegCommand)
 
         if isSplite is True:
             self.trackList = ListWidget(self)
@@ -239,6 +239,6 @@ class TrackSubPage(QWidget):
             self.page, self.trackList.indexFromItem(current).row()
         )
 
-    def onGeneratingFFmpegCommand(self, code: str):
-        if self.task.code == code:
-            self.task.wrapper.fillCommandList(self.task.taskDetail.extraCommand)
+    # def onGeneratingFFmpegCommand(self, code: str):
+    #     if self.task.code == code:
+    #         self.task.wrapper.fillCommandList(self.task.taskDetail.extraCommand)

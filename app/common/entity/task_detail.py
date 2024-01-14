@@ -94,7 +94,7 @@ class TaskDetail:
             self.extraCommand["setAf%d" % index] = "-map 0:a:%d -af %s" % (index, filterName)
             return
 
-        vfCommand = vfCommand.replace("-af%d" % index, "")
+        vfCommand = vfCommand.replace("-map 0:a:%d -af " % index, "")
 
         cList = vfCommand.split(",")
 

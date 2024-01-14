@@ -21,4 +21,4 @@ class Task:
     pid: int
 
     def getCommand(self):
-        return " ".join(TaskDetail.commandList)
+        return " ".join(self.taskDetail.commandList)

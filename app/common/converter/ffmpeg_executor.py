@@ -21,6 +21,7 @@ class FFmpegExecutor(threading.Thread):
     def run(self):
         duration = 0
         progress = 0
+        print(self.command)
 
         process = subprocess.Popen(
             self.command,
@@ -38,6 +39,7 @@ class FFmpegExecutor(threading.Thread):
             if output:
                 o = output.strip()
 
+                print(o)
                 # if video speed has changed, duration will change also
                 # need to take care of this
                 if duration == 0:

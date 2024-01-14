@@ -123,11 +123,12 @@ class FFmpegWrapper:
                 # An empty stream specifier matches all streams. For example, -codec copy or -codec: copy would copy all the streams without reencoding.
                 t.taskDetail.commandList = [
                     "ffmpeg",
+                    "-y",
                     "-i",
                     t.path,
-                    "-c:v",
-                    "-c:a",
-                    "-c:s",
+                    "-c:v copy",
+                    "-c:a copy",
+                    "-c:s copy",
                     outputPath,
                 ]
             else:

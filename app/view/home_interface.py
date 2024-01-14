@@ -103,6 +103,11 @@ class HomeInterface(ScrollArea):
             if not taskDetailDialog.exec():
                 print("cancel detail clicked")
                 return
+        else:
+            signalBus.updateTaskIsKeepOriginalSignal.emit(task.code, task.isKeepingOriginalSetting)
+            self.taskList.addTaskItem(task)
+            return
+
 
         signalBus.updateTaskCommandSignal.emit(task.code, task.taskDetail.extraCommand)
         self.taskList.addTaskItem(task)

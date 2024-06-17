@@ -163,3 +163,4 @@ app/output
 app/config
 
 .vim/
+*.swp

@@ -59,7 +59,8 @@ class TaskDetailWidget(QWidget):
             self.audioSampleRateEdit.setValue(
                 self.task.probe.audioStreams[index].sampling
             )
-            self.audioBitRateEdit.setValue(self.task.probe.audioStreams[index].bitrate)
+            if self.task.probe.audioStreams[index].bitrate != 'fltp':
+                self.audioBitRateEdit.setValue(self.task.probe.audioStreams[index].bitrate)
             self.audioVolumnEdit.setValue(100)
 
     def addVideoPage(self, task: Task):
@@ -88,6 +89,7 @@ class TaskDetailWidget(QWidget):
             lambda t: task.taskDetail.setRotation(t),
         )
 
+        print("video bit rate")
         self.bitRateEdit = PropLineEdit(
             self,
             self.tr("Bit Rate"),
@@ -125,6 +127,7 @@ class TaskDetailWidget(QWidget):
         if len(task.probe.audioStreams) == 0:
             return subPage
 
+        print("sample rate")
         self.audioSampleRateEdit = PropLineEdit(
             self,
             self.tr("Sample Rate"),
@@ -137,18 +140,37 @@ class TaskDetailWidget(QWidget):
             unit="Hz",
         )
 
-        self.audioBitRateEdit = PropLineEdit(
-            self,
-            self.tr("Bit Rate"),
-            task.probe.audioStreams[0].bitrate,
-            lambda t: task.taskDetail.setAudioBitRate(
-                subPage.trackList.currentRow(), t
-            ),
-            minn=1,
-            maxn=2147483647,
-            unit="kb/s",
-        )
+        print("bit rate")
+        print(task.probe.audioStreams[0].bitrate)
+        print(task.probe)
+        if task.probe.audioStreams[0].bitrate != 'fltp':
+            self.audioBitRateEdit = PropLineEdit(
+                self,
+                self.tr("Bit Rate"),
+                task.probe.audioStreams[0].bitrate,
+                lambda t: task.taskDetail.setAudioBitRate(
+                    subPage.trackList.currentRow(), t
+                ),
+                minn=1,
+                maxn=2147483647,
+                unit="kb/s",
+            )
+        else:
+            self.audioBitRateEdit = PropLineEdit(
+                self,
+                self.tr("Bit Rate"),
+                0,
+                lambda t: task.taskDetail.setAudioBitRate(
+                    subPage.trackList.currentRow(), t
+                ),
+                minn=1,
+                maxn=2147483647,
+                unit="kb/s",
+            )
+            self.audioBitRateEdit.setEnabled(False)
 
+
+        print("volumn")
         self.audioVolumnEdit = PropLineEdit(
             self,
             self.tr("Volumn"),

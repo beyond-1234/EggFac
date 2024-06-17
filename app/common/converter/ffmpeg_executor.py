@@ -64,9 +64,15 @@ class FFmpegExecutor(threading.Thread):
                     sec = float(progressMatch2.group(4))
                     progress = hour * 3600 + min * 60 + sec
 
-                signalBus.updateProgressSignal.emit(
-                    self.taskCode, (int)(progress / duration * 100)
-                )
+                if (progress / duration * 100) > 99.5:
+                    signalBus.updateProgressSignal.emit(
+                        self.taskCode, 100
+                    )
+                else:
+                    signalBus.updateProgressSignal.emit(
+                        self.taskCode, (int)(progress / duration * 100)
+                    )
+
 
         process.stdout.close()
         process.stderr.close()

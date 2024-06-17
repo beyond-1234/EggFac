@@ -21,7 +21,6 @@ class FFmpegExecutor(threading.Thread):
     def run(self):
         duration = 0
         progress = 0
-        print(self.command)
 
         process = subprocess.Popen(
             self.command,
@@ -39,7 +38,6 @@ class FFmpegExecutor(threading.Thread):
             if output:
                 o = output.strip()
 
-                print(o)
                 # if video speed has changed, duration will change also
                 # need to take care of this
                 if duration == 0:
@@ -51,22 +49,24 @@ class FFmpegExecutor(threading.Thread):
                         duration = hour * 3600 + min * 60 + sec
 
                 if duration == 0:
-                    print("duration is 0 skipping")
                     continue
 
-                progressMatch = re.search(self.progressPattern2, o)
-                if progressMatch:
-                    hour = int(progressMatch.group(2))
-                    min = int(progressMatch.group(3))
-                    sec = float(progressMatch.group(4))
+                progressMatch1 = re.search(self.progressPattern1, o)
+                progressMatch2 = re.search(self.progressPattern2, o)
+                if progressMatch1:
+                    hour = int(progressMatch1.group(2))
+                    min = int(progressMatch1.group(3))
+                    sec = float(progressMatch1.group(4))
+                    progress = hour * 3600 + min * 60 + sec
+                elif progressMatch2:
+                    hour = int(progressMatch2.group(2))
+                    min = int(progressMatch2.group(3))
+                    sec = float(progressMatch2.group(4))
                     progress = hour * 3600 + min * 60 + sec
 
                 signalBus.updateProgressSignal.emit(
-                    self.taskCode, (progress / duration * 100)
+                    self.taskCode, (int)(progress / duration * 100)
                 )
-
-            if duration != 0 and progress > 99:
-                signalBus.updateProgressSignal.emit(self.taskCode, 100)
 
         process.stdout.close()
         process.stderr.close()

@@ -45,7 +45,7 @@ class TaskInitWidget(QWidget):
         formatLayout = QHBoxLayout(self)
         self.formatLabel = QLabel("Output Format", self)
         self.formatCombo = ComboBox(self)
-        self.formatCombo.addItems(["MP4", "MKV", "FLV"])
+        self.formatCombo.addItems(["mp4", "mkv", "flv"])
         self.formatCombo.setCurrentIndex(0)
         formatLayout.addWidget(self.formatLabel)
         formatLayout.addWidget(self.formatCombo)

@@ -102,6 +102,21 @@ class FFmpegWrapper:
                     print("killing process failed :", str(e))
                 break
 
+    def deleteAllTasks(self):
+        for item in self.taskList:
+            if item.pid != -1:
+                try:
+                    os.kill(item.pid, signal.SIGKILL)
+                    print(f"process {item.pid} has been killed.")
+                    self.taskList.remove(item)
+                except ProcessLookupError:
+                    print(f"process {item.pid} not exists.")
+                except PermissionError:
+                    print(f"permission denied to kill {item.pid}.")
+                except Exception as e:
+                    print("killing process failed :", str(e))
+                break
+
     def updateTaskPid(self, taskCode, pid):
         t = self.__getTaskByCode(taskCode)
         if t is not None:
@@ -125,11 +140,11 @@ class FFmpegWrapper:
                     "ffmpeg",
                     "-y",
                     "-i",
-                    t.path,
+                    f'"{t.path}"',
                     "-c:v copy",
-                    "-c:a copy",
+                    "-c:a aac",
                     "-c:s copy",
-                    outputPath,
+                    f'"{outputPath}"',
                 ]
             else:
                 t.taskDetail.commandList = []
@@ -139,14 +154,14 @@ class FFmpegWrapper:
         if t is None:
             return
 
-        t.taskDetail.commandList = ["ffmpeg", "-i", t.path]
+        t.taskDetail.commandList = ["ffmpeg", "-i", f'"{t.path}"']
         outputPath = os.path.join(
             cfg.get(cfg.outputFolder), t.name + "." + t.targetFormat
         )
 
         t.taskDetail.commandList.extend(list(extraCommand.values()))
 
-        t.taskDetail.commandList.append(outputPath)
+        t.taskDetail.commandList.append(f'"{outputPath}"')
 
     def __getTaskByCode(self, taskCode) -> Task | None:
         filtered_list = list(filter(lambda t: t.code == taskCode, self.taskList))

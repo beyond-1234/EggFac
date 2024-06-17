@@ -39,11 +39,13 @@ class TaskListItemWidget(QFrame):
 
         fileNameLabel = QLabel(task.name, self)
         fileNameLabel.setFont(QFont("Microsoft YaHei", 12, 64, False))
+        fileNameLabel.setMaximumWidth(600)
 
         self.hintLabel = QLabel("", self)
         self.hintLabel.setFont(QFont("Microsoft YaHei", 10, 32, False))
 
         self.progress = ProgressBar(self)
+        self.progress.setRange(0, 100)
         self.progress.setValue(0)
 
         startButton = ToolButton(FluentIcon.CARE_RIGHT_SOLID)

@@ -17,6 +17,7 @@ class FFmpegExecutor(threading.Thread):
         self.durationPattern = (
             "Duration:\\s+([0-9][0-9]):([0-9][0-9]):([0-9][0-9](\\.[0-9][0-9]?)?)"
         )
+        self.finishPattern = r"muxing overhead: ([\d\.]+)%"
 
     def run(self):
         duration = 0
@@ -53,18 +54,23 @@ class FFmpegExecutor(threading.Thread):
 
                 progressMatch1 = re.search(self.progressPattern1, o)
                 progressMatch2 = re.search(self.progressPattern2, o)
+                print(o)
                 if progressMatch1:
                     hour = int(progressMatch1.group(2))
                     min = int(progressMatch1.group(3))
                     sec = float(progressMatch1.group(4))
                     progress = hour * 3600 + min * 60 + sec
+                    print("match1")
                 elif progressMatch2:
                     hour = int(progressMatch2.group(2))
                     min = int(progressMatch2.group(3))
                     sec = float(progressMatch2.group(4))
                     progress = hour * 3600 + min * 60 + sec
+                    print("match2")
 
-                if (progress / duration * 100) > 99.5:
+                print(progress / duration * 100)
+
+                if re.search(self.finishPattern, o):
                     signalBus.updateProgressSignal.emit(
                         self.taskCode, 100
                     )

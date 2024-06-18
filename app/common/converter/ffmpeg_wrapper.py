@@ -141,9 +141,11 @@ class FFmpegWrapper:
                     "-y",
                     "-i",
                     f'"{t.path}"',
+                    "-map 0:v",
                     "-c:v copy",
-                    "-c:a aac",
-                    "-c:s copy",
+                    "-map 0:a",
+                    "-c:a copy",
+                    # "-c:s copy",
                     f'"{outputPath}"',
                 ]
             else:

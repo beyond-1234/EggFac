@@ -17,6 +17,7 @@ class FFmpegWrapper:
         self.taskList = list()
 
         signalBus.startTaskSignal.connect(self.startTask)
+        signalBus.stopTaskSignal.connect(self.stopTask)
         signalBus.deleteTaskSignal.connect(self.deleteTask)
         signalBus.updateTaskPidSignal.connect(self.updateTaskPid)
         signalBus.updateTaskTargetFormatSignal.connect(self.updateTaskTargetFormat)
@@ -72,35 +73,38 @@ class FFmpegWrapper:
         if t is not None:
             thread = FFmpegExecutor(t.getCommand(), t.code)
             thread.start()
+            t.status = TaskStatus.STARTED
+            signalBus.updateViewTaskStatusSignal.emit(t.code, t.status)
 
     def stopTask(self, taskCode):
-        for item in self.taskList:
-            if item.code == taskCode and item.pid != -1:
-                try:
-                    os.kill(item.pid, signal.SIGKILL)
-                    print(f"process {item.pid} has been killed.")
-                except ProcessLookupError:
-                    print(f"process {item.pid} not exists.")
-                except PermissionError:
-                    print(f"permission denied to kill {item.pid}.")
-                except Exception as e:
-                    print("killing process failed :", str(e))
-                break
+        item = self.__getTaskByCode(taskCode)
+        if item is not None and item.pid != -1:
+            print(f"process {item.code} {item.pid} .")
+            try:
+                os.kill(item.pid, signal.SIGKILL)
+                item.status = TaskStatus.CREATED
+                signalBus.updateViewTaskStatusSignal.emit(item.code, item.status)
+                print(f"process {item.pid} has been killed.")
+            except ProcessLookupError:
+                print(f"process {item.pid} not exists.")
+            except PermissionError:
+                print(f"permission denied to kill {item.pid}.")
+            except Exception as e:
+                print("killing process failed :", str(e))
 
     def deleteTask(self, taskCode):
-        for item in self.taskList:
-            if item.code == taskCode and item.pid != -1:
-                try:
-                    os.kill(item.pid, signal.SIGKILL)
-                    print(f"process {item.pid} has been killed.")
-                    self.taskList.remove(item)
-                except ProcessLookupError:
-                    print(f"process {item.pid} not exists.")
-                except PermissionError:
-                    print(f"permission denied to kill {item.pid}.")
-                except Exception as e:
-                    print("killing process failed :", str(e))
-                break
+        item = self.__getTaskByCode(taskCode)
+        if item is not None and item.pid != -1:
+            try:
+                os.kill(item.pid, signal.SIGKILL)
+                print(f"process {item.pid} has been killed.")
+                self.taskList.remove(item)
+            except ProcessLookupError:
+                print(f"process {item.pid} not exists.")
+            except PermissionError:
+                print(f"permission denied to kill {item.pid}.")
+            except Exception as e:
+                print("killing process failed :", str(e))
 
     def deleteAllTasks(self):
         for item in self.taskList:

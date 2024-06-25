@@ -16,6 +16,7 @@ from qfluentwidgets import (
     ProgressBar,
 )
 from ..common.entity.task import Task
+from ..common.entity.task_status import TaskStatus
 from ..common.signal_bus import signalBus
 from ..common.config import cfg
 
@@ -48,9 +49,9 @@ class TaskListItemWidget(QFrame):
         self.progress.setRange(0, 100)
         self.progress.setValue(0)
 
-        startButton = ToolButton(FluentIcon.CARE_RIGHT_SOLID)
-        startButton.clicked.connect(self.startTask)
-        startButton.setIconSize(QSize(12, 12))
+        self.startButton = ToolButton(FluentIcon.CARE_RIGHT_SOLID)
+        self.startButton.clicked.connect(self.startTask)
+        self.startButton.setIconSize(QSize(12, 12))
 
         deleteButton = ToolButton(FluentIcon.DELETE)
         deleteButton.clicked.connect(self.deleteTaskItem)
@@ -68,7 +69,7 @@ class TaskListItemWidget(QFrame):
         self.buttonLayout.setAlignment(Qt.AlignRight | Qt.AlignVCenter)
 
         self.infoLayout.addWidget(fileNameLabel, 1, alignment=Qt.AlignLeft)
-        self.infoLayout.addWidget(startButton, 0, alignment=Qt.AlignRight)
+        self.infoLayout.addWidget(self.startButton, 0, alignment=Qt.AlignRight)
         self.infoLayout.addWidget(deleteButton, 0, alignment=Qt.AlignRight)
         self.infoLayout.addWidget(openButton, 0, alignment=Qt.AlignRight)
 
@@ -78,28 +79,38 @@ class TaskListItemWidget(QFrame):
         self.outerLayout.addLayout(self.infoLayout)
         self.outerLayout.addLayout(self.buttonLayout)
 
+        signalBus.updateViewTaskStatusSignal.connect(self.updateTaskStatus)
+
     def deleteTaskItem(self):
-        print("delete item")
         self.parentLayout.vBoxLayout.removeWidget(self)
 
         signalBus.deleteTaskSignal.emit(self.task.code)
 
     def openTargetFolder(self):
-        print("open target folder")
         subprocess.Popen(["xdg-open", cfg.outputFolder.value])
 
     def updateProgressView(self, code, percentage):
         if self.task.code == code:
             self.progress.setValue(percentage)
             if percentage >= 100:
-                self.hintLabel.setText("finished")
+                self.hintLabel.setText(self.tr("Done"))
             else:
-                self.hintLabel.setText("progressing")
+                self.hintLabel.setText(f"{percentage}%")
 
     def startTask(self):
-        print("start task")
-        signalBus.startTaskSignal.emit(self.task.code)
+        if self.task.status == TaskStatus.CREATED:
+            signalBus.startTaskSignal.emit(self.task.code)
+        elif self.task.status == TaskStatus.STARTED:
+            signalBus.stopTaskSignal.emit(self.task.code)
+
         signalBus.updateProgressSignal.connect(self.updateProgressView)
+
+    def updateTaskStatus(self, taskCode, taskStatus):
+        if self.task.code == taskCode:
+            if taskStatus == TaskStatus.CREATED:
+                self.startButton.setIcon(FluentIcon.CARE_RIGHT_SOLID)
+            elif taskStatus == TaskStatus.STARTED:
+                self.startButton.setIcon(FluentIcon.PAUSE)
 
 
 class TaskListWidget(QWidget):

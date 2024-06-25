@@ -38,7 +38,7 @@ class TaskInitWidget(QWidget):
         super().__init__(parent)
         # header part
         self.vBoxLayout = QVBoxLayout(self)
-        self.taskInstace = task
+        self.taskInstance = task
 
         title = QLabel("Output Settings", self)
         title.setObjectName("titleLabel")
@@ -71,11 +71,11 @@ class TaskInitWidget(QWidget):
 
     def yesButtonClickEvent(self):
         f = self.formatCombo.currentText()
-        ffmpegChecker.check(self.TaskInstance, f)
-        signalBus.updateTaskTargetFormatSignal.emit(self.taskInstace.code, f)
+        ffmpegChecker.check(self.taskInstance, f)
+        signalBus.updateTaskTargetFormatSignal.emit(self.taskInstance.code, f)
 
     def onKeepOriginalChanged(self, state):
         if state == 0:
-            signalBus.updateTaskIsKeepOriginalSignal.emit(self.taskInstace.code, False)
+            signalBus.updateTaskIsKeepOriginalSignal.emit(self.taskInstance.code, False)
         elif state == 2:
-            signalBus.updateTaskIsKeepOriginalSignal.emit(self.taskInstace.code, True)
+            signalBus.updateTaskIsKeepOriginalSignal.emit(self.taskInstance.code, True)

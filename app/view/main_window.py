@@ -14,6 +14,7 @@ from .title_bar import CustomTitleBar
 from ..common.signal_bus import signalBus
 from ..common.style_sheet import StyleSheet
 from ..common import resource
+from app.common.converter.ffmpeg_wrapper import ffmpegWrapper
 
 class StackedWidget(QFrame):
     """ Stacked widget """
@@ -147,3 +148,7 @@ class MainWindow(FramelessWindow):
             if w.objectName() == routeKey:
                 self.stackWidget.setCurrentWidget(w)
                 # w.scrollToCard(index)
+
+    def closeEvent(self, event):
+        ffmpegWrapper.deleteAllTasks()
+

@@ -9,13 +9,13 @@ from qfluentwidgets.components import PrimaryPushButton
 
 from ..common.signal_bus import signalBus
 
-class CustomDialog(MaskDialogBase):
-    """ Message box """
 
-    def __init__(self, content: QWidget, task, parent=None, width=None):
+class CustomDialog(MaskDialogBase):
+    """Message box"""
+
+    def __init__(self, content: QWidget, parent=None, width=None):
         super().__init__(parent=parent)
         self._setUpUi(content, self.widget)
-        self.task = task
 
         self.setShadowEffect(60, (0, 10), QColor(0, 0, 0, 50))
         self.setMaskColor(QColor(0, 0, 0, 76))
@@ -32,8 +32,8 @@ class CustomDialog(MaskDialogBase):
         self.content = content
 
         self.buttonGroup = QFrame(parent)
-        self.yesButton = PrimaryPushButton(self.tr('OK'), self.buttonGroup)
-        self.cancelButton = QPushButton(self.tr('Cancel'), self.buttonGroup)
+        self.yesButton = PrimaryPushButton(self.tr("OK"), self.buttonGroup)
+        self.cancelButton = QPushButton(self.tr("Cancel"), self.buttonGroup)
 
         self.vBoxLayout = QVBoxLayout(parent)
         self.textLayout = QVBoxLayout()
@@ -72,8 +72,8 @@ class CustomDialog(MaskDialogBase):
         self.buttonLayout.addWidget(self.cancelButton, 1, Qt.AlignVCenter)
 
     def __setQss(self):
-        """ 设置层叠样式 """
-        self.cancelButton.setObjectName('cancelButton')
+        """设置层叠样式"""
+        self.cancelButton.setObjectName("cancelButton")
 
         FluentStyleSheet.DIALOG.apply(self)
 
@@ -92,5 +92,4 @@ class CustomDialog(MaskDialogBase):
 
     def __onYesButtonClicked(self):
         self.accept()
-        signalBus.dialogYesButtonSignal.emit(self.task.code)
-
+        signalBus.dialogYesButtonSignal.emit()

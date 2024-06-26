@@ -2,23 +2,43 @@
 import typing
 from PyQt5 import QtCore
 from PyQt5.QtCore import QSize, QUrl, Qt, QRectF
-from PyQt5.QtGui import QDesktopServices, QFont, QPixmap, QPainter, QColor, QBrush, QPainterPath
-from PyQt5.QtWidgets import QFrame, QPushButton, QTreeWidgetItem, QTreeWidgetItemIterator, QWidget, QHBoxLayout, QVBoxLayout, QLabel, QListWidgetItem
+from PyQt5.QtGui import (
+    QDesktopServices,
+    QFont,
+    QPixmap,
+    QPainter,
+    QColor,
+    QBrush,
+    QPainterPath,
+)
+from PyQt5.QtWidgets import (
+    QFrame,
+    QPushButton,
+    QTreeWidgetItem,
+    QTreeWidgetItemIterator,
+    QWidget,
+    QHBoxLayout,
+    QVBoxLayout,
+    QLabel,
+    QListWidgetItem,
+)
 
 from qfluentwidgets import ComboBox, CheckBox
 
 from ..common.entity.task import Task
 from .track_info_widget import TrackInfoWidget
 from ..common.signal_bus import signalBus
+from ..common.converter.ffmpeg_checker import ffmpegChecker
+
 
 class TaskInitWidget(QWidget):
-    """ task list """
+    """task list"""
 
     def __init__(self, parent: QWidget | None, task: Task) -> None:
         super().__init__(parent)
         # header part
         self.vBoxLayout = QVBoxLayout(self)
-        self.taskInstace = task
+        self.taskInstance = task
 
         title = QLabel("Output Settings", self)
         title.setObjectName("titleLabel")
@@ -26,36 +46,36 @@ class TaskInitWidget(QWidget):
         formatLayout = QHBoxLayout(self)
         self.formatLabel = QLabel("Output Format", self)
         self.formatCombo = ComboBox(self)
-        self.formatCombo.addItems(['MP4', 'MKV', 'FLV'])
+        self.formatCombo.addItems(["mp4", "mkv", "flv"])
         self.formatCombo.setCurrentIndex(0)
         formatLayout.addWidget(self.formatLabel)
         formatLayout.addWidget(self.formatCombo)
 
         keepSettingLayout = QHBoxLayout(self)
-        keepSettingLabel = QLabel(self.tr('keep original setting'), self)
-        isKeepingSettingCheckBox = CheckBox('', self)
+        keepSettingLabel = QLabel(self.tr("keep original setting"), self)
+        isKeepingSettingCheckBox = CheckBox("", self)
         isKeepingSettingCheckBox.setChecked(True)
         isKeepingSettingCheckBox.stateChanged.connect(slot=self.onKeepOriginalChanged)
 
         keepSettingLayout.addWidget(keepSettingLabel)
         keepSettingLayout.addWidget(isKeepingSettingCheckBox)
 
-        self.t = TrackInfoWidget(self, task)
+        # self.t = TrackInfoWidget(self, task)
 
         self.vBoxLayout.addWidget(title)
         self.vBoxLayout.addLayout(formatLayout)
         self.vBoxLayout.addLayout(keepSettingLayout)
-        self.vBoxLayout.addWidget(self.t)
+        # self.vBoxLayout.addWidget(self.t)
 
         signalBus.dialogYesButtonSignal.connect(self.yesButtonClickEvent)
 
-    def yesButtonClickEvent(self, code):
-        if self.taskInstace.code == code:
-            self.taskInstace.targetFormat = self.formatCombo.currentText()
-
+    def yesButtonClickEvent(self):
+        f = self.formatCombo.currentText()
+        ffmpegChecker.check(self.taskInstance, f)
+        signalBus.updateTaskTargetFormatSignal.emit(self.taskInstance.code, f)
 
     def onKeepOriginalChanged(self, state):
         if state == 0:
-            self.taskInstace.isKeepingOriginalSeting = False
+            signalBus.updateTaskIsKeepOriginalSignal.emit(self.taskInstance.code, False)
         elif state == 2:
-            self.taskInstace.isKeepingOriginalSeting = True
+            signalBus.updateTaskIsKeepOriginalSignal.emit(self.taskInstance.code, True)

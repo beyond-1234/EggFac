@@ -16,6 +16,8 @@ class MP4FFmpegChecker:
         if "mp4" != targetFormat:
             return self.nextChecker(task, targetFormat)
 
+        return None
+
 
 class MKVFFmpegChecker:
     def __init__(self):

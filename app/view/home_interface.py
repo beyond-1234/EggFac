@@ -7,6 +7,7 @@ from qfluentwidgets import (
     FluentIcon,
     Action,
     CommandBar,
+    SubtitleLabel
 )
 from app.common.converter.ffmpeg_wrapper import ffmpegWrapper
 from app.component.dialog import CustomDialog
@@ -15,6 +16,7 @@ from app.component.task_list_widget import TaskListWidget
 from app.component.task_detail_widget import TaskDetailWidget
 from ..common.style_sheet import StyleSheet
 from ..common.signal_bus import signalBus
+from ..common.converter.ffmpeg_checker import ffmpegChecker
 
 
 class HeaderWidget(QWidget):
@@ -96,6 +98,17 @@ class HomeInterface(ScrollArea):
         if not taskInitDialog.exec():
             print("cancel clicked")
             return
+
+        checkMsg = ffmpegChecker.check(task, task.targetFormat)
+
+        if checkMsg != None:
+            checkDialog = CustomDialog(SubtitleLabel(checkMsg, self), self)
+            while not checkDialog.exec():
+                taskInitDialog = CustomDialog(TaskInitWidget(self, task), self)
+                if not taskInitDialog.exec():
+                    print("cancel clicked")
+                    return
+
 
         if not task.isKeepingOriginalSetting:
             # open detail setting dialog

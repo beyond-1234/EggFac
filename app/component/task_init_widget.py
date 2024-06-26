@@ -28,7 +28,6 @@ from qfluentwidgets import ComboBox, CheckBox
 from ..common.entity.task import Task
 from .track_info_widget import TrackInfoWidget
 from ..common.signal_bus import signalBus
-from ..common.converter.ffmpeg_checker import ffmpegChecker
 
 
 class TaskInitWidget(QWidget):
@@ -71,7 +70,6 @@ class TaskInitWidget(QWidget):
 
     def yesButtonClickEvent(self):
         f = self.formatCombo.currentText()
-        ffmpegChecker.check(self.taskInstance, f)
         signalBus.updateTaskTargetFormatSignal.emit(self.taskInstance.code, f)
 
     def onKeepOriginalChanged(self, state):

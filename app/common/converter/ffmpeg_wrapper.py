@@ -25,6 +25,7 @@ class FFmpegWrapper:
         signalBus.updateTaskIsKeepOriginalSignal.connect(
             self.updateIsKeepOriginalSetting
         )
+        signalBus.updateViewTaskStatusSignal.connect(self.updateTaskStatus)
 
     # def _addInputFile(self, filePath):
     #     self.commandList.append("-i")
@@ -73,8 +74,7 @@ class FFmpegWrapper:
         if t is not None:
             thread = FFmpegExecutor(t.getCommand(), t.code)
             thread.start()
-            t.status = TaskStatus.STARTED
-            signalBus.updateViewTaskStatusSignal.emit(t.code, t.status)
+            signalBus.updateViewTaskStatusSignal.emit(t.code, TaskStatus.STARTED)
 
     def stopTask(self, taskCode):
         item = self.__getTaskByCode(taskCode)
@@ -82,8 +82,7 @@ class FFmpegWrapper:
             print(f"process {item.code} {item.pid} .")
             try:
                 os.kill(item.pid, signal.SIGKILL)
-                item.status = TaskStatus.CREATED
-                signalBus.updateViewTaskStatusSignal.emit(item.code, item.status)
+                signalBus.updateViewTaskStatusSignal.emit(item.code, TaskStatus.CREATED)
                 print(f"process {item.pid} has been killed.")
             except ProcessLookupError:
                 print(f"process {item.pid} not exists.")
@@ -168,6 +167,13 @@ class FFmpegWrapper:
         t.taskDetail.commandList.extend(list(extraCommand.values()))
 
         t.taskDetail.commandList.append(f'"{outputPath}"')
+
+    def updateTaskStatus(self, taskCode, taskStatus):
+        t = self.__getTaskByCode(taskCode)
+        if t is None:
+            return
+
+        t.status = taskStatus
 
     def __getTaskByCode(self, taskCode) -> Task | None:
         filtered_list = list(filter(lambda t: t.code == taskCode, self.taskList))

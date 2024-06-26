@@ -102,6 +102,8 @@ class TaskListItemWidget(QFrame):
             signalBus.startTaskSignal.emit(self.task.code)
         elif self.task.status == TaskStatus.STARTED:
             signalBus.stopTaskSignal.emit(self.task.code)
+        elif self.task.status == TaskStatus.ENDED:
+            signalBus.startTaskSignal.emit(self.task.code)
 
         signalBus.updateProgressSignal.connect(self.updateProgressView)
 
@@ -111,6 +113,8 @@ class TaskListItemWidget(QFrame):
                 self.startButton.setIcon(FluentIcon.CARE_RIGHT_SOLID)
             elif taskStatus == TaskStatus.STARTED:
                 self.startButton.setIcon(FluentIcon.PAUSE)
+            elif taskStatus == TaskStatus.ENDED:
+                self.startButton.setIcon(FluentIcon.CARE_RIGHT_SOLID)
 
 
 class TaskListWidget(QWidget):

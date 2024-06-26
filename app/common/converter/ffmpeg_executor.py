@@ -3,6 +3,7 @@ import threading
 import re
 
 from ..signal_bus import signalBus
+from app.common.entity.task_status import TaskStatus
 
 
 class FFmpegExecutor(threading.Thread):
@@ -74,6 +75,7 @@ class FFmpegExecutor(threading.Thread):
                     signalBus.updateProgressSignal.emit(
                         self.taskCode, 100
                     )
+                    signalBus.updateViewTaskStatusSignal.emit(self.taskCode, TaskStatus.ENDED)
                 else:
                     signalBus.updateProgressSignal.emit(
                         self.taskCode, (int)(progress / duration * 100)
